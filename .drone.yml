@@ -1,8 +1,8 @@
 image: bjodah/dockerfile-bjodah-scicomp
 git:
-    path: github.com/bjodah/chemreac-stiffness
+    path: github.com/bjodah/pyodeint
 script:
   - python2 setup.py build_ext --inplace
-  - py.test-2.7
   - python3 setup.py build_ext --inplace
-  - py.test-3.4
+  - PYTHONPATH=$(pwd) python2 -m pytest
+  - PYTHONPATH=$(pwd) python3 -m pytest

@@ -13,7 +13,7 @@ adpative integration routine).
 
 Example
 =======
-The classic van der Pol oscillator (see `examlpes/van_der_pol.py`_)
+The classic van der Pol oscillator (see `examlpes/van_der_pol.py <examlpes/van_der_pol.py>`_)
 
 ::
 
@@ -43,5 +43,6 @@ Contributors are welcome to suggest improvements at https://github.com/bjodah/py
 Author
 ======
 Björn I. Dahlgren, contact:
- - gmail adress: bjodah
- - kth.se adress: bda
+
+- gmail address: bjodah
+- kth.se address: bda
