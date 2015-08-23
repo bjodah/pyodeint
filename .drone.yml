@@ -1,0 +1,8 @@
+image: bjodah/dockerfile-bjodah-scicomp
+git:
+    path: github.com/bjodah/chemreac-stiffness
+script:
+  - python2 setup.py build_ext --inplace
+  - py.test-2.7
+  - python3 setup.py build_ext --inplace
+  - py.test-3.4
