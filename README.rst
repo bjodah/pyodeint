@@ -13,7 +13,7 @@ adpative integration routine).
 
 Example
 =======
-The classic van der Pol oscillator (see `examlpes/van_der_pol.py <examlpes/van_der_pol.py>`_)
+The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_der_pol.py>`_)
 
 ::
 
