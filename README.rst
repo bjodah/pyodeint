@@ -15,7 +15,7 @@ Example
 =======
 The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_der_pol.py>`_)
 
-::
+.. code:: python
 
    >>> from pyodeint import integrate_adaptive
    >>> mu = 1.0
