@@ -4,6 +4,7 @@ import numpy as np
 
 from ._odeint_numpy import integrate_adaptive as _integrate_adaptive
 
+from .release import __version__
 
 def integrate_adaptive(f, j, ny, atol, rtol, y0, x0, xend, dx0,
                        check_callable=True, check_indexing=True):

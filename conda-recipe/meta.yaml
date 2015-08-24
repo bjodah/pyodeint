@@ -1,0 +1,27 @@
+package:
+    name: pyodeint
+    version: 0.1.0.git
+
+source:
+    path: ../
+
+build:
+    number: 0
+
+requirements:
+    build:
+        - python
+        - numpy
+        - boost
+        - cython
+    run:
+        - numpy
+        - python
+
+test:
+    imports:
+        - pyodeint
+
+about:
+    home: https://github.com/bjodah/pyodeint
+    license: Simplified BSD license
