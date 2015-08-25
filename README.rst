@@ -28,7 +28,8 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...     Jmat[0, 1] = 1
    ...     Jmat[1, 0] = -1 -mu*2*y[1]*y[0]
    ...     Jmat[1, 1] = mu*(1 - y[0]**2)
-   ...     dfdt[:] = 0
+   ...     dfdt[0] = 0
+   ...     dfdt[1] = 0
    ...
    >>> y0 = [1; 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
    >>> tout, yout = integrate_adaptive(f, j, ny, atol, rtol, y0, t0, tend, dt0)
