@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from pyodeint import integrate_adaptive
+from pyodeint import integrate_adaptive, integrate_predefined
 
 decay_analytic = {
     0: lambda y0, k, t: (
@@ -18,16 +18,14 @@ decay_analytic = {
 
 
 def decay_get_Cref(k, y0, tout):
-    coeffs = k + [0]*(3-len(k))
+    coeffs = list(k) + [0]*(3-len(k))
     return np.column_stack([
         decay_analytic[i](y0, coeffs, tout) for i in range(
             min(3, len(k)+1))])
 
 
-def test_integrate_adaptive():
-    k0, k1, k2 = 2.0, 3.0, 4.0
-    k = [k0, k1, k2]
-    y0 = [0.7, 0.3, 0.5]
+def _get_f_j(k):
+    k0, k1, k2 = k
 
     def f(t, y, fout):
         fout[0] = -k0*y[0]
@@ -47,9 +45,27 @@ def test_integrate_adaptive():
         dfdx_out[0] = 0
         dfdx_out[1] = 0
         dfdx_out[2] = 0
+    return f, j
+
+
+def test_integrate_adaptive():
+    k = k0, k1, k2 = 2.0, 3.0, 4.0
+    y0 = [0.7, 0.3, 0.5]
+    f, j = _get_f_j(k)
     x0 = 0
     xend = 3
     dx0 = 1e-10
-    xout, yout = integrate_adaptive(f, j, 3, 1e-9, 1e-9, y0, x0, xend, dx0)
+    xout, yout = integrate_adaptive(f, j, 3, y0, x0, xend, dx0, 1e-9, 1e-9)
+    yref = decay_get_Cref(k, y0, xout)
+    assert np.allclose(yout, yref)
+
+
+def test_integrate_predefined():
+    k = k0, k1, k2 = 2.0, 3.0, 4.0
+    y0 = [0.7, 0.3, 0.5]
+    f, j = _get_f_j(k)
+    xout = np.linspace(0, 3)
+    dx0 = 1e-10
+    yout = integrate_predefined(f, j, 3, y0, xout, dx0, 1e-9, 1e-9)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)

@@ -19,11 +19,14 @@ if '--help' not in sys.argv[1:] and sys.argv[1] not in (
             '--help-commands', 'egg_info', 'clean', '--version'):
     USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx')
     ext = '.pyx' if USE_CYTHON else '.cpp'
-    ext_modules = [Extension('pyodeint._odeint_numpy', ['pyodeint/_odeint_numpy'+ext],
-                             language='c++', extra_compile_args=['-std=c++11'])]
+    ext_modules = [Extension('pyodeint._odeint_numpy',
+                             ['pyodeint/_odeint_numpy'+ext],
+                             language='c++',
+                             extra_compile_args=['-std=c++11'])]
     if USE_CYTHON:
         from Cython.Build import cythonize
-        ext_modules = cythonize(ext_modules, include_path=['./include'], gdb_debug=True)
+        ext_modules = cythonize(ext_modules, include_path=['./include'],
+                                gdb_debug=True)
 
 PYODEINT_RELEASE_VERSION = os.environ.get('PYODEINT_RELEASE_VERSION', '')
 
@@ -31,7 +34,8 @@ PYODEINT_RELEASE_VERSION = os.environ.get('PYODEINT_RELEASE_VERSION', '')
 CONDA_BUILD = os.environ.get('CONDA_BUILD', '0') == '1'
 if CONDA_BUILD:
     try:
-        PYODEINT_RELEASE_VERSION = 'v' + open('__conda_version__.txt', 'rt').readline().rstrip()
+        PYODEINT_RELEASE_VERSION = 'v' + open(
+            '__conda_version__.txt', 'rt').readline().rstrip()
     except IOError:
         pass
 
@@ -73,7 +77,8 @@ if __name__ == '__main__':
             # depending on tagged version (set PYODEINT_RELEASE_VERSION)
             # this will ensure source distributions contain the correct version
             shutil.move(release_py_path, release_py_path+'__temp__')
-            open(release_py_path, 'wt').write("__version__ = '{}'\n".format(__version__))
+            open(release_py_path, 'wt').write(
+                "__version__ = '{}'\n".format(__version__))
         setup(**setup_kwargs)
     finally:
         if TAGGED_RELEASE:
