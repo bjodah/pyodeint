@@ -32,7 +32,7 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...     dfdt[1] = 0
    ...
    >>> y0 = [1; 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
-   >>> tout, yout = integrate_adaptive(f, j, ny, atol, rtol, y0, t0, tend, dt0)
+   >>> tout, yout = integrate_adaptive(f, j, ny, y0, t0, tend, dt0, atol, rtol)
 
 
 License

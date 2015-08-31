@@ -16,3 +16,12 @@ def test_examples(pypath):
     py_exe = 'python3' if sys.version_info.major == 3 else 'python'
     p = subprocess.Popen([py_exe, pypath])
     assert p.wait() == 0  # SUCCESS==0
+
+    p = subprocess.Popen([py_exe, pypath, '--nt', '17'])
+    assert p.wait() == 0  # SUCCESS==0
+
+    p = subprocess.Popen([py_exe, pypath, '--stepper', 'dopri5'])
+    assert p.wait() == 0  # SUCCESS==0
+
+    p = subprocess.Popen([py_exe, pypath, '--nt', '17', '--stepper', 'dopri5'])
+    assert p.wait() == 0  # SUCCESS==0

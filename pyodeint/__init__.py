@@ -2,48 +2,106 @@ from __future__ import absolute_import
 
 import numpy as np
 
-from ._odeint_numpy import integrate_adaptive as _integrate_adaptive
+from ._odeint_numpy import integrate_adaptive as _adaptive
+from ._odeint_numpy import integrate_predefined as _predefined
+from ._util import _check_callable, _check_indexing
 
 from .release import __version__
 
-def integrate_adaptive(f, j, ny, atol, rtol, y0, x0, xend, dx0,
-                       check_callable=True, check_indexing=True):
 
+def integrate_adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol,
+                       check_callable=True, check_indexing=True, **kwargs):
+    """
+    Integrates a system of ordinary differential equations.
+
+    Parameters
+    ----------
+    rhs: callable
+        Function with signature f(t, y, fout) which modifies fout *inplace*.
+    jac: callable
+        Function with signature j(t, y, jmat_out, dfdx_out) which modifies
+        jmat_out and dfdx_out *inplace*.
+    ny: int
+        number of dependent variables (size of system)
+    y0: array_like
+        initial values of the dependent variables
+    x0: float
+        initial value of the independent variable
+    xend: float
+        stopping value for the independent variable
+    dx0: float
+        initial step-size
+    atol: float
+        absolute tolerance
+    rtol: float
+        relative tolerance
+    check_callable: bool (default: True)
+        perform signature sanity checks on ``rhs`` and ``jac``
+    check_indexing: bool (default: True)
+        perform item setting sanity checks on ``rhs`` and ``jac``.
+    \*\*kwargs:
+         'stepper': str
+            'rosenbrock4' or 'dopri5'
+
+    Returns
+    -------
+    (xout, yout):
+        xout: 1-dimensional array of values for the independent variable
+        yout: 2-dimensional array of the dependent variables (axis 1) for
+            values corresponding to xout (axis 0)
+    """
     # Sanity checks to reduce risk of having a segfault:
     if check_callable:
-        _fout = np.empty(ny)
-        _ret = f(x0, y0, _fout)
-        if _ret is not None:
-            raise ValueError("f() must return None")
-
-        _jmat_out = np.empty((ny, ny))
-        _dfdx_out = np.empty(ny)
-        _ret = j(x0, y0, _jmat_out, _dfdx_out)
-        if _ret is not None:
-            raise ValueError("j() must return None")
+        _check_callable(rhs, jac, ny, x0, y0)
 
     if check_indexing:
-        _fout_short = np.empty(ny-1)
-        try:
-            f(x0, y0, _fout_short)
-        except IndexError:
-            pass
-        else:
-            raise ValueError("All elements in fout not assigned in f()")
+        _check_indexing(rhs, jac, ny, x0, y0)
 
-        _jmat_out_short = np.empty((ny, ny-1))
-        try:
-            j(x0, y0, _jmat_out_short, _dfdx_out)
-        except IndexError:
-            pass
-        else:
-            raise ValueError("All elements in Jout not assigned in j()")
-        _dfdx_out_short = np.empty(ny-1)
-        try:
-            j(x0, y0, _jmat_out, _dfdx_out_short)
-        except IndexError:
-            pass
-        else:
-            raise ValueError("All elements in dfdx_out not assigned in j()")
+    return _adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol, **kwargs)
 
-    return _integrate_adaptive(f, j, ny, atol, rtol, y0, x0, xend, dx0)
+
+def integrate_predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol,
+                         check_callable=True, check_indexing=True, **kwargs):
+    """
+    Integrates a system of ordinary differential equations.
+
+    Parameters
+    ----------
+    rhs: callable
+        Function with signature f(t, y, fout) which modifies fout *inplace*.
+    jac: callable
+        Function with signature j(t, y, jmat_out, dfdx_out) which modifies
+        jmat_out and dfdx_out *inplace*.
+    ny: int
+        number of dependent variables (size of system)
+    y0: array_like
+        initial values of the dependent variables
+    xout: array_like
+        values of the independent variable
+    dx0: float
+        initial step-size
+    atol: float
+        absolute tolerance
+    rtol: float
+        relative tolerance
+    check_callable: bool (default: True)
+        perform signature sanity checks on ``rhs`` and ``jac``
+    check_indexing: bool (default: True)
+        perform item setting sanity checks on ``rhs`` and ``jac``.
+    \*\*kwargs:
+         'stepper': str
+            'rosenbrock4' or 'dopri5'
+
+    Returns
+    -------
+    2-dimensional array of the dependent variables (axis 1) for
+    values corresponding to xout (axis 0)
+    """
+    # Sanity checks to reduce risk of having a segfault:
+    if check_callable:
+        _check_callable(rhs, jac, ny, xout[0], y0)
+
+    if check_indexing:
+        _check_indexing(rhs, jac, ny, xout[0], y0)
+
+    return _predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol, **kwargs)
