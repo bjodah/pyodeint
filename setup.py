@@ -17,10 +17,20 @@ pkg_name = 'pyodeint'
 ext_modules = []
 if '--help' not in sys.argv[1:] and sys.argv[1] not in (
             '--help-commands', 'egg_info', 'clean', '--version'):
-    USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx')
-    ext = '.pyx' if USE_CYTHON else '.cpp'
+    USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx.template')
+    if USE_CYTHON:
+        source = 'pyodeint/_odeint_numpy.pyx'
+        # render source from template:
+        open(source, 'wt').write(
+            '# rendered from template, do not edit\n' +
+            open(source + '.template', 'rt').read().replace(
+                '${INTEGRATOR_METHODS}',
+                open(source + '.methods', 'rt').read()))
+    else:
+        source = 'pyodeint/_odeint_numpy.cpp'
+
     ext_modules = [Extension('pyodeint._odeint_numpy',
-                             ['pyodeint/_odeint_numpy'+ext],
+                             [source],
                              language='c++',
                              extra_compile_args=['-std=c++11'])]
     if USE_CYTHON:
