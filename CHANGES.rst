@@ -1,3 +1,8 @@
+v0.3
+====
+- Breaking Python API change: "stepper" kwarg renamed to "method" (to follow SciPy better)
+- Cython source rendered from template.
+
 v0.2
 ====
 - 'steppers' keyword added to integrate_adaptive

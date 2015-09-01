@@ -20,8 +20,8 @@ def test_examples(pypath):
     p = subprocess.Popen([py_exe, pypath, '--nt', '17'])
     assert p.wait() == 0  # SUCCESS==0
 
-    p = subprocess.Popen([py_exe, pypath, '--stepper', 'dopri5'])
+    p = subprocess.Popen([py_exe, pypath, '--method', 'dopri5'])
     assert p.wait() == 0  # SUCCESS==0
 
-    p = subprocess.Popen([py_exe, pypath, '--nt', '17', '--stepper', 'dopri5'])
+    p = subprocess.Popen([py_exe, pypath, '--nt', '17', '--method', 'dopri5'])
     assert p.wait() == 0  # SUCCESS==0

@@ -64,16 +64,16 @@ Integrator = {
 
 
 def integrate_adaptive(rhs, jac, int ny, y0, x0, xend, dx0, double atol, double rtol,
-                       stepper='rosenbrock4'):
+                       method='rosenbrock4'):
     cdef size_t nsteps
-    integr = Integrator[stepper](rhs, jac, ny)
+    integr = Integrator[method](rhs, jac, ny)
     nsteps = integr.adaptive(np.asarray(y0), x0, xend, dx0, atol, rtol)
     return integr.get_xout(nsteps), integr.get_yout(nsteps)
 
 
 def integrate_predefined(rhs, jac, int ny, y0, xout, double dx0, double atol, double rtol,
-                         stepper='rosenbrock4'):
-    integr = Integrator[stepper](rhs, jac, ny)
+                         method='rosenbrock4'):
+    integr = Integrator[method](rhs, jac, ny)
     yout = integr.predefined(
         np.asarray(y0, dtype=np.float64),
         np.asarray(xout, dtype=np.float64),
