@@ -8,3 +8,4 @@ pyodeint/_odeint_numpy.cpp
 MANIFEST
 .cache/
 pyodeint/_odeint_numpy.pyx
+__conda_version__.txt
