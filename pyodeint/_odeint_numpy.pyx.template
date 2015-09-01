@@ -11,23 +11,23 @@ cimport numpy as cnp
 cnp.import_array()  # Numpy C-API initialization
 
 cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
-    # cdef cppclass PyOdeintRosenbrock4:
-    #     int ny
-    #     vector[double] xout
-    #     vector[double] yout
+    cdef cppclass PyOdeintRosenbrock4:
+        int ny
+        vector[double] xout
+        vector[double] yout
 
-    #     PyOdeintRosenbrock4(PyObject*, PyObject*, int)
-    #     size_t adaptive(PyObject*, double, double, double, double, double)
-    #     void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
+        PyOdeintRosenbrock4(PyObject*, PyObject*, int)
+        size_t adaptive(PyObject*, double, double, double, double, double)
+        void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
 
-    # cdef cppclass PyOdeintDopri5:
-    #     int ny
-    #     vector[double] xout
-    #     vector[double] yout
+    cdef cppclass PyOdeintDopri5:
+        int ny
+        vector[double] xout
+        vector[double] yout
 
-    #     PyOdeintDopri5(PyObject*, int)
-    #     size_t adaptive(PyObject*, double, double, double, double, double)
-    #     void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
+        PyOdeintDopri5(PyObject*, int)
+        size_t adaptive(PyObject*, double, double, double, double, double)
+        void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
 
     cdef cppclass PyOdeintBulirschStoer:
         int ny
@@ -39,31 +39,31 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
         void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
 
 
-# cdef class OdeintRosenbrock4:
+cdef class OdeintRosenbrock4:
 
-#     cdef PyOdeintRosenbrock4 *thisptr
+    cdef PyOdeintRosenbrock4 *thisptr
 
-#     def __cinit__(self, object rhs, object jac, int ny):
-#         self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs, <PyObject *>jac, ny)
+    def __cinit__(self, object rhs, object jac, int ny):
+        self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs, <PyObject *>jac, ny)
 
-#     def __dealloc__(self):
-#         del self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
 
-# {INTEGRATOR_METHODS}
+${INTEGRATOR_METHODS}
 
 
-# cdef class OdeintDopri5:
+cdef class OdeintDopri5:
 
-#     cdef PyOdeintDopri5 *thisptr
+    cdef PyOdeintDopri5 *thisptr
 
-#     def __cinit__(self, object rhs, object jac, int ny):
-#         # silently drop jac, maybe not the best design..
-#         self.thisptr = new PyOdeintDopri5(<PyObject *>rhs, ny)
+    def __cinit__(self, object rhs, object jac, int ny):
+        # silently drop jac, maybe not the best design..
+        self.thisptr = new PyOdeintDopri5(<PyObject *>rhs, ny)
 
-#     def __dealloc__(self):
-#         del self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
 
-# {INTEGRATOR_METHODS}
+${INTEGRATOR_METHODS}
 
 
 cdef class OdeintBulirschStoer:
@@ -81,8 +81,8 @@ ${INTEGRATOR_METHODS}
 
 
 Integrator = {
-    # 'rosenbrock4': OdeintRosenbrock4,
-    # 'dopri5': OdeintDopri5,
+    'rosenbrock4': OdeintRosenbrock4,
+    'dopri5': OdeintDopri5,
     'bs': OdeintBulirschStoer,
 }
 

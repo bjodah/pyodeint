@@ -11,8 +11,7 @@ namespace odeint_numpy{
     using namespace std::placeholders;
 
     using boost::numeric::odeint::integrate_adaptive;
-    //using boost::numeric::odeint::make_dense_output;
-    using boost::numeric::odeint::dense_output_factory;
+    using boost::numeric::odeint::make_dense_output;
     using boost::numeric::odeint::rosenbrock4;
     using boost::numeric::odeint::runge_kutta_dopri5;
     using boost::numeric::odeint::bulirsch_stoer_dense_out;
@@ -31,7 +30,9 @@ namespace odeint_numpy{
     }
 
     // PyIntegr will be specialzed for: rosenbrock, dopri5 and bulrisch-stoer
-    template<typename system_t, typename dense_factory_t>
+    // adaptive and predefined cannot be put here since make_dense_output
+    // is a function and bulirsch_stoer_dense_out is a class
+    template<typename system_t>
     class PyIntegr {
     protected:
         system_t system;
@@ -54,68 +55,98 @@ namespace odeint_numpy{
             obs_cb = std::bind(&PyIntegr::obs, this, _1, _2);
         }
 
-        size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
-                   value_type dx0, value_type atol, value_type rtol){
-            vector_type y0 = from_1d_pyarray(py_y0);
-            auto stepper = dense_factory_t(atol, rtol);
-            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
-        }
-
-        void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *yout,
-                        value_type dx0, value_type atol, value_type rtol){
-            vector_type y0 = from_1d_pyarray(py_y0);
-            vector_type xout = from_1d_pyarray(py_xout);
-            auto stepper = dense_factory_t(atol, rtol);
-            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
-                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
-                std::copy(y0.begin(), y0.end(), static_cast<double*>(PyArray_GETPTR2(yout, ix+1, 0)));
-            }
-        }
     };
 
     // Specialization: Bulirsch-Stoer
     class PyOdeintBulirschStoer : public PyIntegr<
-        std::function<void(const vector_type &, vector_type &, value_type)>,
-        bulirsch_stoer_dense_out< vector_type, value_type >
-        > {
+        std::function<void(const vector_type &, vector_type &, value_type)> > {
     public:
         PyOdeintBulirschStoer(PyObject * py_rhs, int ny) :
             PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
+
+        size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
+                   value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
+            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+        }
+
+        void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
+                        value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            vector_type xout = from_1d_pyarray(py_xout);
+            auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
+            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                std::copy(y0.begin(), y0.end(),
+                          static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
+            }
+        }
+
     };
 
-    // // Specialization: Rosenbrock
-    // class PyOdeintRosenbrock4 : public PyIntegr<
-    //     std::pair<std::function<void(const vector_type &, vector_type &, value_type)>,
-    //               std::function<void(const vector_type &, matrix_type &,
-    //                                  const value_type &, vector_type &)> >,
-    //     rosenbrock4_dense_out
-    //     > {
-    // public:
-    //     PyOdeintRosenbrock4(PyObject * py_rhs, PyObject * py_jac, int ny) :
-    //         PyIntegr(py_rhs, py_jac, ny,
-    //                  std::make_pair(std::bind(&PyIntegr::rhs, this, _1, _2, _3),
-    //                                 std::bind(&PyIntegr::jac, this, _1, _2, _3, _4))) {}
-    // };
+    // Specialization: Rosenbrock
+    class PyOdeintRosenbrock4 : public PyIntegr<
+        std::pair<std::function<void(const vector_type &, vector_type &, value_type)>,
+                  std::function<void(const vector_type &, matrix_type &,
+                                     const value_type &, vector_type &)> > > {
+    public:
+        PyOdeintRosenbrock4(PyObject * py_rhs, PyObject * py_jac, int ny) :
+            PyIntegr(py_rhs, py_jac, ny,
+                     std::make_pair(std::bind(&PyIntegr::rhs, this, _1, _2, _3),
+                                    std::bind(&PyIntegr::jac, this, _1, _2, _3, _4))) {}
+        size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
+                   value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
+            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+        }
 
-    // typedef dense_output_factory<runge_kutta_dopri5<vector_type, value_type>,
-    //                              typename boost::numeric::odeint::result_of::make_dense_output<
-    //                                  runge_kutta_dopri5<vector_type, value_type> >::type
-    //                              > runge_kutta_dopri5_dense_out;
-    // // Specialization: Dopri5
-    // class PyOdeintDopri5 : public PyIntegr<
-    //     std::function<void(const vector_type &, vector_type &, value_type)>,
-    //     runge_kutta_dopri5_dense_out
-    //     > {
-    // public:
-    //     PyOdeintDopri5(PyObject * py_rhs, int ny) :
-    //         PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
-    // };
+        void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
+                        value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            vector_type xout = from_1d_pyarray(py_xout);
+            auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
+            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                std::copy(y0.begin(), y0.end(),
+                          static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
+            }
+        }
+
+    };
+
+    // Specialization: Dopri5
+    class PyOdeintDopri5 : public PyIntegr<
+        std::function<void(const vector_type &, vector_type &, value_type)> > {
+    public:
+        PyOdeintDopri5(PyObject * py_rhs, int ny) :
+            PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
+        size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
+                   value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
+            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+        }
+
+        void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
+                        value_type dx0, value_type atol, value_type rtol){
+            vector_type y0 = from_1d_pyarray(py_y0);
+            vector_type xout = from_1d_pyarray(py_xout);
+            auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
+            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                std::copy(y0.begin(), y0.end(),
+                          static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
+            }
+        }
+    };
 
 }
 
-template<typename T1, typename T2>
+template<typename T1>
 void
-odeint_numpy::PyIntegr<T1, T2>::rhs(const vector_type &yarr, vector_type &dydx,
+odeint_numpy::PyIntegr<T1>::rhs(const vector_type &yarr, vector_type &dydx,
                                      value_type xval) const
 {
     npy_intp dims[1] { this-> ny };
@@ -138,9 +169,9 @@ odeint_numpy::PyIntegr<T1, T2>::rhs(const vector_type &yarr, vector_type &dydx,
     Py_DECREF(py_result);
 }
 
-template<typename T1, typename T2>
+template<typename T1>
 void
-odeint_numpy::PyIntegr<T1, T2>::jac(const vector_type & yarr, matrix_type &Jmat,
+odeint_numpy::PyIntegr<T1>::jac(const vector_type & yarr, matrix_type &Jmat,
                                      const value_type & xval, vector_type &dfdx) const
 {
     npy_intp ydims[1] { this->ny };

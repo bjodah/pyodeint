@@ -51,7 +51,7 @@ def _get_f_j(k):
     return f, j
 
 
-@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5'])
+@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5', 'bs'])
 def test_integrate_adaptive(method):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
@@ -64,7 +64,7 @@ def test_integrate_adaptive(method):
     assert np.allclose(yout, yref)
 
 
-@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5'])
+@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5', 'bs'])
 def test_integrate_predefined(method):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
