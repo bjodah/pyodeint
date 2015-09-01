@@ -29,6 +29,15 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
         size_t adaptive(PyObject*, double, double, double, double, double)
         void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
 
+    cdef cppclass PyOdeintBulirschStoer:
+        int ny
+        vector[double] xout
+        vector[double] yout
+
+        PyOdeintBulirschStoer(PyObject*, int)
+        size_t adaptive(PyObject*, double, double, double, double, double)
+        void predefined(PyObject*, PyObject *, PyObject *, double, double, double)
+
 
 cdef class OdeintRosenbrock4:
 
@@ -57,9 +66,24 @@ cdef class OdeintDopri5:
 ${INTEGRATOR_METHODS}
 
 
+cdef class OdeintBulirschStoer:
+
+    cdef PyOdeintBulirschStoer *thisptr
+
+    def __cinit__(self, object rhs, object jac, int ny):
+        # silently drop jac, maybe not the best design..
+        self.thisptr = new PyOdeintBulirschStoer(<PyObject *>rhs, ny)
+
+    def __dealloc__(self):
+        del self.thisptr
+
+${INTEGRATOR_METHODS}
+
+
 Integrator = {
     'rosenbrock4': OdeintRosenbrock4,
     'dopri5': OdeintDopri5,
+    'bs': OdeintBulirschStoer,
 }
 
 
