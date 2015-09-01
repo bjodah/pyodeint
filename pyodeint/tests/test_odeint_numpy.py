@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import pytest
+
 from pyodeint import integrate_adaptive, integrate_predefined
+
 
 decay_analytic = {
     0: lambda y0, k, t: (
@@ -48,24 +51,26 @@ def _get_f_j(k):
     return f, j
 
 
-def test_integrate_adaptive():
+@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5'])
+def test_integrate_adaptive(method):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
     f, j = _get_f_j(k)
     x0 = 0
     xend = 3
     dx0 = 1e-10
-    xout, yout = integrate_adaptive(f, j, 3, y0, x0, xend, dx0, 1e-9, 1e-9)
+    xout, yout = integrate_adaptive(f, j, 3, y0, x0, xend, dx0, 1e-9, 1e-9, method=method)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
 
 
-def test_integrate_predefined():
+@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5'])
+def test_integrate_predefined(method):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
     f, j = _get_f_j(k)
     xout = np.linspace(0, 3)
     dx0 = 1e-10
-    yout = integrate_predefined(f, j, 3, y0, xout, dx0, 1e-9, 1e-9)
+    yout = integrate_predefined(f, j, 3, y0, xout, dx0, 1e-9, 1e-9, method=method)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
