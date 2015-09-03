@@ -5,7 +5,8 @@ from __future__ import division
 import numpy as np
 
 
-def _check_callable(f, j, ny, x0, y0):
+def _check_callable(f, j, x0, y0):
+    ny = len(y0)
     _fout = np.empty(ny)
     _ret = f(x0, y0, _fout)
     if _ret is not None:
@@ -18,7 +19,8 @@ def _check_callable(f, j, ny, x0, y0):
         raise ValueError("j() must return None")
 
 
-def _check_indexing(f, j, ny, x0, y0):
+def _check_indexing(f, j, x0, y0):
+    ny = len(y0)
     _fout_short = np.empty(ny-1)
     try:
         f(x0, y0, _fout_short)

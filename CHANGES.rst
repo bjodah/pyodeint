@@ -1,3 +1,8 @@
+v0.4
+====
+- Breaking Python API change: ny no longer needed in integrate_predefined/integrate_adaptive
+- Excepctions thrown from C++ are now propagated to Python.
+
 v0.3
 ====
 - Breaking Python API change: "stepper" kwarg renamed to "method" (to follow SciPy better)

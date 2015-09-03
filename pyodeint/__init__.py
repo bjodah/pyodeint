@@ -1,15 +1,14 @@
 from __future__ import absolute_import
 
-import numpy as np
-
 from ._odeint_numpy import integrate_adaptive as _adaptive
 from ._odeint_numpy import integrate_predefined as _predefined
 from ._util import _check_callable, _check_indexing
 
 from .release import __version__
+assert __version__  # silence pyflakes
 
 
-def integrate_adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol,
+def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
                        check_callable=True, check_indexing=True, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -21,8 +20,6 @@ def integrate_adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol,
     jac: callable
         Function with signature j(t, y, jmat_out, dfdx_out) which modifies
         jmat_out and dfdx_out *inplace*.
-    ny: int
-        number of dependent variables (size of system)
     y0: array_like
         initial values of the dependent variables
     x0: float
@@ -40,7 +37,7 @@ def integrate_adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol,
     check_indexing: bool (default: True)
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
-         'stepper': str
+         'method': str
             'rosenbrock4' or 'dopri5'
 
     Returns
@@ -52,15 +49,15 @@ def integrate_adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol,
     """
     # Sanity checks to reduce risk of having a segfault:
     if check_callable:
-        _check_callable(rhs, jac, ny, x0, y0)
+        _check_callable(rhs, jac, x0, y0)
 
     if check_indexing:
-        _check_indexing(rhs, jac, ny, x0, y0)
+        _check_indexing(rhs, jac, x0, y0)
 
-    return _adaptive(rhs, jac, ny, y0, x0, xend, dx0, atol, rtol, **kwargs)
+    return _adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol, **kwargs)
 
 
-def integrate_predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol,
+def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
                          check_callable=True, check_indexing=True, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -72,8 +69,6 @@ def integrate_predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol,
     jac: callable
         Function with signature j(t, y, jmat_out, dfdx_out) which modifies
         jmat_out and dfdx_out *inplace*.
-    ny: int
-        number of dependent variables (size of system)
     y0: array_like
         initial values of the dependent variables
     xout: array_like
@@ -89,7 +84,7 @@ def integrate_predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol,
     check_indexing: bool (default: True)
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
-         'stepper': str
+         'method': str
             'rosenbrock4' or 'dopri5'
 
     Returns
@@ -99,9 +94,9 @@ def integrate_predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol,
     """
     # Sanity checks to reduce risk of having a segfault:
     if check_callable:
-        _check_callable(rhs, jac, ny, xout[0], y0)
+        _check_callable(rhs, jac, xout[0], y0)
 
     if check_indexing:
-        _check_indexing(rhs, jac, ny, xout[0], y0)
+        _check_indexing(rhs, jac, xout[0], y0)
 
-    return _predefined(rhs, jac, ny, y0, xout, dx0, atol, rtol, **kwargs)
+    return _predefined(rhs, jac, y0, xout, dx0, atol, rtol, **kwargs)

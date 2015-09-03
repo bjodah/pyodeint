@@ -59,7 +59,8 @@ def test_integrate_adaptive(method):
     x0 = 0
     xend = 3
     dx0 = 1e-10
-    xout, yout = integrate_adaptive(f, j, 3, y0, x0, xend, dx0, 1e-9, 1e-9, method=method)
+    xout, yout = integrate_adaptive(f, j, y0, x0, xend, dx0, 1e-9, 1e-9,
+                                    method=method)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
 
@@ -71,6 +72,6 @@ def test_integrate_predefined(method):
     f, j = _get_f_j(k)
     xout = np.linspace(0, 3)
     dx0 = 1e-10
-    yout = integrate_predefined(f, j, 3, y0, xout, dx0, 1e-9, 1e-9, method=method)
+    yout = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9, method=method)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
