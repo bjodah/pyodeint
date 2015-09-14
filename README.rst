@@ -5,6 +5,12 @@ pyodeint
 .. image:: http://hera.physchem.kth.se:8080/github.com/bjodah/pyodeint/status.svg?branch=master
    :target: http://hera.physchem.kth.se:8080/github.com/bjodah/pyodeint
    :alt: Build status
+.. image:: https://img.shields.io/pypi/v/pyodeint.svg
+   :target: https://pypi.python.org/pypi/pyodeint
+   :alt: PyPI version
+.. image:: https://img.shields.io/pypi/l/pyodeint.svg
+   :target: https://github.com/bjodah/pyodeint/blob/master/LICENSE
+   :alt: License
 
 ``pyodeint`` provides a `Python <http://www.python.org>`_ binding to
 `odeint <http://www.odint.com>`_. Currently, only the the 4th order
@@ -33,6 +39,8 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...
    >>> y0 = [1; 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
    >>> tout, yout = integrate_adaptive(f, j, y0, t0, tend, dt0, atol, rtol)
+
+.. image:: https://raw.githubusercontent.com/bjodah/pyodeint/master/examples/van_der_pol.png
 
 
 License

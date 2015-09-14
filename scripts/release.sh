@@ -18,3 +18,4 @@ conda build conda-recipe
 git tag -a $1 -m $1
 git push --tags
 twine upload dist/${PKG}-${1#v}.tar.gz
+echo "Remember to bump dev version!"

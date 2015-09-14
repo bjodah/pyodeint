@@ -62,7 +62,9 @@ if '--help' not in sys.argv[1:] and sys.argv[1] not in (
     ext_modules = [Extension('pyodeint._odeint_numpy',
                              [source],
                              language='c++',
-                             extra_compile_args=['-std=c++11'])]
+                             extra_compile_args=['-std=c++11'],
+                             include_dirs=[np.get_include(), './include']
+                         )]
     if USE_CYTHON:
         from Cython.Build import cythonize
         ext_modules = cythonize(ext_modules, include_path=['./include'],
@@ -90,7 +92,7 @@ else:
     exec(open(release_py_path).read())
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Topic :: Scientific/Engineering',
@@ -104,10 +106,10 @@ setup_kwargs = dict(
     classifiers=classifiers,
     author='Björn Dahlgren',
     author_email='bjodah@DELETEMEgmail.com',
+    license='BSD',
     url='https://github.com/bjodah/' + pkg_name,
     packages=[pkg_name],
     ext_modules=ext_modules,
-    include_dirs=[np.get_include(), './include']
 )
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ def get_f_and_j(mu):
 
 def integrate_ivp(u0=1.0, v0=0.0, mu=1.0, tend=10.0, dt0=1e-8, nt=0,
                   t0=0.0, atol=1e-8, rtol=1e-8, plot=False, savefig='None',
-                  method='rosenbrock4'):
+                  method='rosenbrock4', dpi=100):
     """
     Example program integrating an IVP problem of van der Pol oscillator
     """
@@ -42,7 +42,7 @@ def integrate_ivp(u0=1.0, v0=0.0, mu=1.0, tend=10.0, dt0=1e-8, nt=0,
         if savefig == 'None':
             plt.show()
         else:
-            plt.savefig(savefig)
+            plt.savefig(savefig, dpi=dpi)
 
 
 if __name__ == '__main__':
