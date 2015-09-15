@@ -38,7 +38,7 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
          'method': str
-            'rosenbrock4' or 'dopri5'
+            'rosenbrock4', 'dopri5' or 'bs'
 
     Returns
     -------
@@ -85,7 +85,7 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
          'method': str
-            'rosenbrock4' or 'dopri5'
+            'rosenbrock4', 'dopri5' or 'bs'
 
     Returns
     -------

@@ -13,9 +13,16 @@ pyodeint
    :alt: License
 
 ``pyodeint`` provides a `Python <http://www.python.org>`_ binding to
-`odeint <http://www.odint.com>`_. Currently, only the the 4th order
-Rosenbrock stepper has been wrapped and exposed to python (using the
-adpative integration routine).
+`odeint <http://www.odint.com>`_. Currently, the following steppers are
+exposed:
+
+- 4th order Rosenbrock (implicit) stepper
+- 5th order DOPRI5 (explicit runge-kutta)
+- Bulirsch-Stoer stepper (modified midpoint rule).
+
+The Rosenbrock4 stepper requires that the user provides a routine for
+calculating the Jacobian.
+
 
 Example
 =======
@@ -38,7 +45,11 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...     dfdt[1] = 0
    ...
    >>> y0 = [1; 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
-   >>> tout, yout = integrate_adaptive(f, j, y0, t0, tend, dt0, atol, rtol)
+   >>> tout, yout = integrate_adaptive(f, j, y0, t0, tend, dt0, atol, rtol,
+   ...                                 method='rosenbrock')
+   >>> import matplotlib.pyplot as plt
+   >>> plt.plot(tout, yout)
+
 
 .. image:: https://raw.githubusercontent.com/bjodah/pyodeint/master/examples/van_der_pol.png
 
@@ -46,7 +57,7 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
 License
 =======
 The source code is Open Source and is released under the very permissive
-"simplified (2-clause) BSD license". See ``LICENSE.txt`` for further details.
+"simplified (2-clause) BSD license". See ``LICENSE`` for further details.
 Contributors are welcome to suggest improvements at https://github.com/bjodah/pyodeint
 
 Author
