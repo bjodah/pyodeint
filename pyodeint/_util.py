@@ -12,6 +12,9 @@ def _check_callable(f, j, x0, y0):
     if _ret is not None:
         raise ValueError("f() must return None")
 
+    if j is None:
+        return  # Not all methods require a jacobian
+
     _jmat_out = np.empty((ny, ny))
     _dfdx_out = np.empty(ny)
     _ret = j(x0, y0, _jmat_out, _dfdx_out)
@@ -28,6 +31,9 @@ def _check_indexing(f, j, x0, y0):
         pass
     else:
         raise ValueError("All elements in fout not assigned in f()")
+
+    if j is None:
+        return  # Not all methods require a jacobian
 
     _dfdx_out = np.empty(ny)
     _jmat_out_short = np.empty((ny, ny-1))

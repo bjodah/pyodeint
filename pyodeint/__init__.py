@@ -4,7 +4,7 @@ from ._odeint_numpy import integrate_adaptive as _adaptive
 from ._odeint_numpy import integrate_predefined as _predefined
 from ._util import _check_callable, _check_indexing
 
-from .release import __version__
+from ._release import __version__
 assert __version__  # silence pyflakes
 
 

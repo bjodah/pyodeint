@@ -4,6 +4,7 @@
 build/
 dist/
 cython_debug/
+doc/
 pyodeint/_odeint_numpy.cpp
 MANIFEST
 .cache/
