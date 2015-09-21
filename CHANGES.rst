@@ -1,3 +1,7 @@
+v0.4.1
+======
+- jacobian callback may now be None for DOPRI5 and Bulirsch-Stoer (not used anyway).
+
 v0.4
 ====
 - Breaking Python API change: ny no longer needed in integrate_predefined/integrate_adaptive
