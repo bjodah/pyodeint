@@ -63,8 +63,7 @@ if '--help' not in sys.argv[1:] and sys.argv[1] not in (
                              [source],
                              language='c++',
                              extra_compile_args=['-std=c++11'],
-                             include_dirs=[np.get_include(), './include']
-                         )]
+                             include_dirs=[np.get_include(), './include'])]
     if USE_CYTHON:
         from Cython.Build import cythonize
         ext_modules = cythonize(ext_modules, include_path=['./include'],
@@ -81,14 +80,14 @@ if CONDA_BUILD:
     except IOError:
         pass
 
-release_py_path = os.path.join(pkg_name, 'release.py')
+release_py_path = os.path.join(pkg_name, '_release.py')
 
 if len(PYODEINT_RELEASE_VERSION) > 1 and PYODEINT_RELEASE_VERSION[0] == 'v':
     TAGGED_RELEASE = True
     __version__ = PYODEINT_RELEASE_VERSION[1:]
 else:
     TAGGED_RELEASE = False
-    # read __version__ attribute from release.py:
+    # read __version__ attribute from _release.py:
     exec(open(release_py_path).read())
 
 classifiers = [

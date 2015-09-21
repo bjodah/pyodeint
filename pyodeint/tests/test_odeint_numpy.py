@@ -50,12 +50,16 @@ def _get_f_j(k):
         dfdx_out[2] = 0
     return f, j
 
+methods = [('rosenbrock4', True), ('dopri5', False), ('bs', False)]
 
-@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5', 'bs'])
-def test_integrate_adaptive(method):
+
+@pytest.mark.parametrize("method,use_jac", methods)
+def test_integrate_adaptive(method, use_jac):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
     f, j = _get_f_j(k)
+    if not use_jac:
+        j = None
     x0 = 0
     xend = 3
     dx0 = 1e-10
@@ -65,11 +69,13 @@ def test_integrate_adaptive(method):
     assert np.allclose(yout, yref)
 
 
-@pytest.mark.parametrize("method", ['rosenbrock4', 'dopri5', 'bs'])
-def test_integrate_predefined(method):
+@pytest.mark.parametrize("method,use_jac", methods)
+def test_integrate_predefined(method, use_jac):
     k = k0, k1, k2 = 2.0, 3.0, 4.0
     y0 = [0.7, 0.3, 0.5]
     f, j = _get_f_j(k)
+    if not use_jac:
+        j = None
     xout = np.linspace(0, 3)
     dx0 = 1e-10
     yout = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9, method=method)
