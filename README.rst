@@ -23,14 +23,21 @@ exposed:
 The Rosenbrock4 stepper requires that the user provides a routine for
 calculating the Jacobian.
 
+Installation
+------------
+Binary distribution is available here:
+`<https://anaconda.org/bjodah/pyodeint>`_
+
+Source distribution is available here:
+`<https://pypi.python.org/pypi/pyodeint>`_
 
 Example
-=======
+-------
 The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_der_pol.py>`_)
 
 .. code:: python
 
-   >>> from pyodeint import integrate_adaptive
+   >>> from pyodeint import integrate_adaptive  # also: integrate_predefined
    >>> mu = 1.0
    >>> def f(t, y, dydt):
    ...     dydt[0] = y[1]
@@ -44,24 +51,24 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...     dfdt[0] = 0
    ...     dfdt[1] = 0
    ...
-   >>> y0 = [1; 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
+   >>> y0 = [1, 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
    >>> tout, yout = integrate_adaptive(f, j, y0, t0, tend, dt0, atol, rtol,
-   ...                                 method='rosenbrock')
+   ...                                 method='rosenbrock4')
    >>> import matplotlib.pyplot as plt
-   >>> plt.plot(tout, yout)
+   >>> plt.plot(tout, yout)  # doctest: +SKIP
 
 
 .. image:: https://raw.githubusercontent.com/bjodah/pyodeint/master/examples/van_der_pol.png
 
 
 License
-=======
+-------
 The source code is Open Source and is released under the very permissive
 "simplified (2-clause) BSD license". See ``LICENSE`` for further details.
 Contributors are welcome to suggest improvements at https://github.com/bjodah/pyodeint
 
 Author
-======
+------
 Björn I. Dahlgren, contact:
 
 - gmail address: bjodah

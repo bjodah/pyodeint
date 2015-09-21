@@ -86,17 +86,23 @@ Integrator = {
     'bs': OdeintBulirschStoer,
 }
 
+requires_jac = ('rosenbrock4',)
 
 def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, double atol, double rtol,
                        method='rosenbrock4'):
     cdef size_t nsteps
+    if method in requires_jac and jac is None:
+        raise ValueError("Method requires explicit jacobian callback")
     integr = Integrator[method](rhs, jac, len(y0))
-    nsteps = integr.adaptive(np.asarray(y0), x0, xend, dx0, atol, rtol)
+    nsteps = integr.adaptive(np.asarray(y0, dtype=np.float64),
+                             x0, xend, dx0, atol, rtol)
     return integr.get_xout(nsteps), integr.get_yout(nsteps)
 
 
 def integrate_predefined(rhs, jac, y0, xout, double dx0, double atol, double rtol,
                          method='rosenbrock4'):
+    if method in requires_jac and jac is None:
+        raise ValueError("Method requires explicit jacobian callback")
     integr = Integrator[method](rhs, jac, len(y0))
     yout = integr.predefined(
         np.asarray(y0, dtype=np.float64),

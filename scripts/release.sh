@@ -1,4 +1,8 @@
 #!/bin/bash -xe
+# Usage:
+#
+#    $ ./scripts/release.sh v1.2.3
+#
 if [[ $1 != v* ]]; then
     echo "Argument does not start with 'v'"
     exit 1
@@ -18,4 +22,4 @@ conda build conda-recipe
 git tag -a $1 -m $1
 git push --tags
 twine upload dist/${PKG}-${1#v}.tar.gz
-echo "Remember to bump dev version!"
+echo "Remember to bump version (and commit and push)!"
