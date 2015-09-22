@@ -44,13 +44,13 @@ namespace odeint_numpy{
         }
         std::function<void(const vector_type&, value_type)> obs_cb;
     public:
-        const int ny;
+        const size_t ny;
         std::vector<value_type> xout;
         std::vector<value_type> yout;
         void rhs(const vector_type &yarr, vector_type &dydx, value_type xval) const;
         void jac(const vector_type & yarr, matrix_type &Jmat,
                const value_type & xval, vector_type &dfdx) const;
-        PyIntegr(PyObject * py_rhs, PyObject * py_jac, int ny, system_t sys) :
+        PyIntegr(PyObject * py_rhs, PyObject * py_jac, size_t ny, system_t sys) :
             system(sys), py_rhs(py_rhs), py_jac(py_jac), ny(ny) {
             obs_cb = std::bind(&PyIntegr::obs, this, _1, _2);
         }
@@ -61,7 +61,7 @@ namespace odeint_numpy{
     class PyOdeintBulirschStoer : public PyIntegr<
         std::function<void(const vector_type &, vector_type &, value_type)> > {
     public:
-        PyOdeintBulirschStoer(PyObject * py_rhs, int ny) :
+        PyOdeintBulirschStoer(PyObject * py_rhs, size_t ny) :
             PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
 
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
@@ -76,7 +76,7 @@ namespace odeint_numpy{
             vector_type y0 = from_1d_pyarray(py_y0);
             vector_type xout = from_1d_pyarray(py_xout);
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
-            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+            for (size_t ix=0; ix < xout.size()-1; ++ix){
                 integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
@@ -91,7 +91,7 @@ namespace odeint_numpy{
                   std::function<void(const vector_type &, matrix_type &,
                                      const value_type &, vector_type &)> > > {
     public:
-        PyOdeintRosenbrock4(PyObject * py_rhs, PyObject * py_jac, int ny) :
+        PyOdeintRosenbrock4(PyObject * py_rhs, PyObject * py_jac, size_t ny) :
             PyIntegr(py_rhs, py_jac, ny,
                      std::make_pair(std::bind(&PyIntegr::rhs, this, _1, _2, _3),
                                     std::bind(&PyIntegr::jac, this, _1, _2, _3, _4))) {}
@@ -107,7 +107,7 @@ namespace odeint_numpy{
             vector_type y0 = from_1d_pyarray(py_y0);
             vector_type xout = from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
-            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+            for (size_t ix=0; ix < xout.size()-1; ++ix){
                 integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
@@ -120,7 +120,7 @@ namespace odeint_numpy{
     class PyOdeintDopri5 : public PyIntegr<
         std::function<void(const vector_type &, vector_type &, value_type)> > {
     public:
-        PyOdeintDopri5(PyObject * py_rhs, int ny) :
+        PyOdeintDopri5(PyObject * py_rhs, size_t ny) :
             PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
@@ -134,7 +134,7 @@ namespace odeint_numpy{
             vector_type y0 = from_1d_pyarray(py_y0);
             vector_type xout = from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
-            for (npy_intp ix=0; ix < xout.size()-1; ++ix){
+            for (size_t ix=0; ix < xout.size()-1; ++ix){
                 integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
@@ -149,7 +149,7 @@ void
 odeint_numpy::PyIntegr<T1>::rhs(const vector_type &yarr, vector_type &dydx,
                                      value_type xval) const
 {
-    npy_intp dims[1] { this-> ny };
+    npy_intp dims[1] { static_cast<npy_intp>(this->ny) };
     PyObject * py_yarr = PyArray_SimpleNewFromData(
         1, dims, NPY_DOUBLE, const_cast<value_type *>(&(yarr.data()[0])));
     PyObject * py_dydx = PyArray_SimpleNewFromData(
@@ -174,8 +174,8 @@ void
 odeint_numpy::PyIntegr<T1>::jac(const vector_type & yarr, matrix_type &Jmat,
                                      const value_type & xval, vector_type &dfdx) const
 {
-    npy_intp ydims[1] { this->ny };
-    npy_intp Jdims[2] { this->ny, this->ny };
+    npy_intp ydims[1] { static_cast<npy_intp>(this->ny) };
+    npy_intp Jdims[2] { static_cast<npy_intp>(this->ny), static_cast<npy_intp>(this->ny) };
     PyObject * py_yarr = PyArray_SimpleNewFromData(1, ydims, NPY_DOUBLE,
                                                    const_cast<value_type *>(&(yarr.data()[0])));
     PyObject * py_jmat = PyArray_SimpleNewFromData(2, Jdims, NPY_DOUBLE,

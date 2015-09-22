@@ -12,29 +12,29 @@ cnp.import_array()  # Numpy C-API initialization
 
 cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
     cdef cppclass PyOdeintRosenbrock4:
-        int ny
+        size_t ny
         vector[double] xout
         vector[double] yout
 
-        PyOdeintRosenbrock4(PyObject*, PyObject*, int)
+        PyOdeintRosenbrock4(PyObject*, PyObject*, size_t)
         size_t adaptive(PyObject*, double, double, double, double, double) except +
         void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
 
     cdef cppclass PyOdeintDopri5:
-        int ny
+        size_t ny
         vector[double] xout
         vector[double] yout
 
-        PyOdeintDopri5(PyObject*, int)
+        PyOdeintDopri5(PyObject*, size_t)
         size_t adaptive(PyObject*, double, double, double, double, double) except +
         void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
 
     cdef cppclass PyOdeintBulirschStoer:
-        int ny
+        size_t ny
         vector[double] xout
         vector[double] yout
 
-        PyOdeintBulirschStoer(PyObject*, int)
+        PyOdeintBulirschStoer(PyObject*, size_t)
         size_t adaptive(PyObject*, double, double, double, double, double) except +
         void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
 
@@ -43,7 +43,7 @@ cdef class OdeintRosenbrock4:
 
     cdef PyOdeintRosenbrock4 *thisptr
 
-    def __cinit__(self, object rhs, object jac, int ny):
+    def __cinit__(self, object rhs, object jac, size_t ny):
         self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs, <PyObject *>jac, ny)
 
     def __dealloc__(self):
@@ -56,7 +56,7 @@ cdef class OdeintDopri5:
 
     cdef PyOdeintDopri5 *thisptr
 
-    def __cinit__(self, object rhs, object jac, int ny):
+    def __cinit__(self, object rhs, object jac, size_t ny):
         # silently drop jac, maybe not the best design..
         self.thisptr = new PyOdeintDopri5(<PyObject *>rhs, ny)
 
@@ -70,7 +70,7 @@ cdef class OdeintBulirschStoer:
 
     cdef PyOdeintBulirschStoer *thisptr
 
-    def __cinit__(self, object rhs, object jac, int ny):
+    def __cinit__(self, object rhs, object jac, size_t ny):
         # silently drop jac, maybe not the best design..
         self.thisptr = new PyOdeintBulirschStoer(<PyObject *>rhs, ny)
 

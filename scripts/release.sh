@@ -13,9 +13,9 @@ PKG=$(find . -maxdepth 2 -name __init__.py -print0 | xargs -0 -n1 dirname | xarg
 PKG_UPPER=$(echo $PKG | tr '[:lower:]' '[:upper:]')
 ./scripts/run_tests.sh
 env ${PKG_UPPER}_RELEASE_VERSION=$1 python setup.py sdist
-echo $1>__conda_version__.txt
-trap "rm __conda_version__.txt" EXIT SIGINT SIGTERM
-conda build conda-recipe
+
+# Build conda recipe:
+./scipts/build_conda_recipe.sh
 
 # All went well
 
