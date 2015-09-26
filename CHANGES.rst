@@ -1,3 +1,7 @@
+v0.4.2
+======
+- Less strict callback checks on python side.
+
 v0.4.1
 ======
 - jacobian callback may now be None for DOPRI5 and Bulirsch-Stoer (not used anyway).

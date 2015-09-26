@@ -12,7 +12,7 @@ pyodeint
    :target: https://github.com/bjodah/pyodeint/blob/master/LICENSE
    :alt: License
 
-`pyodeint <https://github.com/bjodah/pyodeint>`_ provides a 
+`pyodeint <https://github.com/bjodah/pyodeint>`_ provides a
 `Python <http://www.python.org>`_ binding to `odeint <http://www.odint.com>`_.
 Currently, the following steppers are exposed:
 
