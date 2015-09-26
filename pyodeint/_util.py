@@ -27,7 +27,7 @@ def _check_indexing(f, j, x0, y0):
     _fout_short = np.empty(ny-1)
     try:
         f(x0, y0, _fout_short)
-    except IndexError:
+    except (IndexError, ValueError):
         pass
     else:
         raise ValueError("All elements in fout not assigned in f()")
@@ -39,7 +39,7 @@ def _check_indexing(f, j, x0, y0):
     _jmat_out_short = np.empty((ny, ny-1))
     try:
         j(x0, y0, _jmat_out_short, _dfdx_out)
-    except IndexError:
+    except (IndexError, ValueError):
         pass
     else:
         raise ValueError("All elements in Jout not assigned in j()")
@@ -48,7 +48,7 @@ def _check_indexing(f, j, x0, y0):
     _dfdx_out_short = np.empty(ny-1)
     try:
         j(x0, y0, _jmat_out, _dfdx_out_short)
-    except IndexError:
+    except (IndexError, ValueError):
         pass
     else:
         raise ValueError("All elements in dfdx_out not assigned in j()")
