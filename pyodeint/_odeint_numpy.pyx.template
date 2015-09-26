@@ -95,7 +95,7 @@ Integrator = {
 
 requires_jac = ('rosenbrock4',)
 
-def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
+def adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
                        double rtol, method='rosenbrock4'):
     cdef size_t nsteps
     if method in requires_jac and jac is None:
@@ -106,7 +106,7 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
     return integr.get_xout(nsteps), integr.get_yout(nsteps)
 
 
-def integrate_predefined(rhs, jac, y0, xout, double dx0, double atol,
+def predefined(rhs, jac, y0, xout, double dx0, double atol,
                          double rtol, method='rosenbrock4'):
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
