@@ -17,8 +17,10 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
         vector[double] yout
 
         PyOdeintRosenbrock4(PyObject*, PyObject*, size_t)
-        size_t adaptive(PyObject*, double, double, double, double, double) except +
-        void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
+        size_t adaptive(PyObject*, double, double, double, double,
+                        double) except +
+        void predefined(PyObject*, PyObject *, PyObject *, double,
+                        double, double) except +
 
     cdef cppclass PyOdeintDopri5:
         size_t ny
@@ -26,8 +28,10 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
         vector[double] yout
 
         PyOdeintDopri5(PyObject*, size_t)
-        size_t adaptive(PyObject*, double, double, double, double, double) except +
-        void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
+        size_t adaptive(PyObject*, double, double, double, double,
+                        double) except +
+        void predefined(PyObject*, PyObject *, PyObject *, double,
+                        double, double) except +
 
     cdef cppclass PyOdeintBulirschStoer:
         size_t ny
@@ -35,8 +39,10 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
         vector[double] yout
 
         PyOdeintBulirschStoer(PyObject*, size_t)
-        size_t adaptive(PyObject*, double, double, double, double, double) except +
-        void predefined(PyObject*, PyObject *, PyObject *, double, double, double) except +
+        size_t adaptive(PyObject*, double, double, double, double,
+                        double) except +
+        void predefined(PyObject*, PyObject *, PyObject *, double,
+                        double, double) except +
 
 
 cdef class OdeintRosenbrock4:
@@ -44,7 +50,8 @@ cdef class OdeintRosenbrock4:
     cdef PyOdeintRosenbrock4 *thisptr
 
     def __cinit__(self, object rhs, object jac, size_t ny):
-        self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs, <PyObject *>jac, ny)
+        self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs,
+                                               <PyObject *>jac, ny)
 
     def __dealloc__(self):
         del self.thisptr
@@ -88,8 +95,8 @@ Integrator = {
 
 requires_jac = ('rosenbrock4',)
 
-def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, double atol, double rtol,
-                       method='rosenbrock4'):
+def adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
+                       double rtol, method='rosenbrock4'):
     cdef size_t nsteps
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
@@ -99,8 +106,8 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, double atol, double rtol,
     return integr.get_xout(nsteps), integr.get_yout(nsteps)
 
 
-def integrate_predefined(rhs, jac, y0, xout, double dx0, double atol, double rtol,
-                         method='rosenbrock4'):
+def predefined(rhs, jac, y0, xout, double dx0, double atol,
+                         double rtol, method='rosenbrock4'):
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
     integr = Integrator[method](rhs, jac, len(y0))

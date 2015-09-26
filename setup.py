@@ -44,7 +44,7 @@ def missing_or_any_other_newer(path, other_paths):
 # Cythonize .pyx file if it exists (not in source distribution)
 ext_modules = []
 if '--help' not in sys.argv[1:] and sys.argv[1] not in (
-            '--help-commands', 'egg_info', 'clean', '--version'):
+        '--help-commands', 'egg_info', 'clean', '--version'):
     USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx.template')
     if USE_CYTHON:
         source = 'pyodeint/_odeint_numpy.pyx'

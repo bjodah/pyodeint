@@ -1,11 +1,10 @@
 from __future__ import absolute_import
 
-from ._odeint_numpy import integrate_adaptive as _adaptive
-from ._odeint_numpy import integrate_predefined as _predefined
+from ._odeint_numpy import adaptive, predefined, requires_jac
 from ._util import _check_callable, _check_indexing
 
 from ._release import __version__
-assert __version__  # silence pyflakes
+assert __version__, requires_jac  # silence pyflakes
 
 
 def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
@@ -54,7 +53,7 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
     if check_indexing:
         _check_indexing(rhs, jac, x0, y0)
 
-    return _adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol, **kwargs)
+    return adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol, **kwargs)
 
 
 def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
@@ -99,4 +98,4 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
     if check_indexing:
         _check_indexing(rhs, jac, xout[0], y0)
 
-    return _predefined(rhs, jac, y0, xout, dx0, atol, rtol, **kwargs)
+    return predefined(rhs, jac, y0, xout, dx0, atol, rtol, **kwargs)

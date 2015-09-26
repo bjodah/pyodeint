@@ -60,11 +60,10 @@ def test_integrate_adaptive(method, use_jac):
     f, j = _get_f_j(k)
     if not use_jac:
         j = None
-    x0 = 0
-    xend = 3
-    dx0 = 1e-10
-    xout, yout = integrate_adaptive(f, j, y0, x0, xend, dx0, 1e-9, 1e-9,
-                                    method=method)
+    kwargs = dict(x0=0, xend=3, dx0=1e-10, atol=1e-8, rtol=1e-8, method=method)
+    # Run twice to catch possible side-effects:
+    xout, yout = integrate_adaptive(f, j, y0, **kwargs)
+    xout, yout = integrate_adaptive(f, j, y0, **kwargs)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
 
@@ -78,6 +77,8 @@ def test_integrate_predefined(method, use_jac):
         j = None
     xout = np.linspace(0, 3)
     dx0 = 1e-10
+    # Run twice to catch possible side-effects:
+    yout = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9, method=method)
     yout = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9, method=method)
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
