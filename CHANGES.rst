@@ -1,3 +1,7 @@
+v0.4.3
+======
+- Ship tests with package (e.g.: python -m pytest --pyargs pyodeint)
+
 v0.4.2
 ======
 - Less strict callback checks on python side.

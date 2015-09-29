@@ -98,6 +98,10 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Mathematics',
 ]
 
+tests = [
+    'pyodeint.tests',
+]
+
 setup_kwargs = dict(
     name=pkg_name,
     version=__version__,
