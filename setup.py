@@ -111,7 +111,7 @@ setup_kwargs = dict(
     author_email='bjodah@DELETEMEgmail.com',
     license='BSD',
     url='https://github.com/bjodah/' + pkg_name,
-    packages=[pkg_name],
+    packages=[pkg_name] + tests,
     ext_modules=ext_modules,
 )
 
