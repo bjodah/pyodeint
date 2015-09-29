@@ -21,6 +21,8 @@ requirements:
 test:
     imports:
         - pyodeint
+    requires:
+        - pytest
 
 about:
     home: https://github.com/bjodah/pyodeint
