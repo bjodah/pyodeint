@@ -1,12 +1,12 @@
-#!/bin/bash -ex
-# Extract absolute path of script, from:
-# http://unix.stackexchange.com/a/9546
-ABSOLUTE_REPO_PATH_X="$(readlink -fn -- "$(dirname $0)/.."; echo x)"
-ABSOLUTE_REPO_PATH="${ABSOLUTE_REPO_PATH_X%x}"
-export PYTHONPATH=$ABSOLUTE_REPO_PATH
-cd ${ABSOLUTE_REPO_PATH}
+#!/bin/bash -e
+PKG_NAME=${1}
+if [[ ! -z $PKG_NAME ]]; then
+    COV_FLAGS="--cov $PKG_NAME --cov-report html"
+else
+    COV_FLAGS=""
+fi
+cd $(dirname $0)/..
 python2 setup.py build_ext -i
-python2 -m pytest --pep8 --flakes --ignore build/ --ignore doc/
+python2 -m pytest --ignore build/ --ignore doc/ --doctest-modules --pep8 --flakes $COV_FLAGS
 python3 setup.py build_ext -i
 python3 -m pytest --ignore build/ --ignore doc/
-python -m doctest README.rst
