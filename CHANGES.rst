@@ -1,3 +1,12 @@
+v0.5.0
+======
+- New function signature: integrate_predefined and integrate_adaptive now
+  also return an info dict containing ``nrhs`` and ``njac`` conatining
+  number of calls to each function made during last integration.
+- Expose ``_odeint_numpy.steppers`` tuple at module level.
+- check_callbable and check_indexing kwargs now defaults to False
+
+
 v0.4.3
 ======
 - Ship tests with package (e.g.: python -m pytest --pyargs pyodeint)

@@ -35,3 +35,6 @@
             for j in range(ny):
                 yout[i, j] = self.thisptr.yout[i*ny + j]
         return yout
+
+    def get_info(self):
+        return {'nrhs': self.thisptr.nrhs, 'njac': self.thisptr.njac}

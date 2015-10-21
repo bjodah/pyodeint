@@ -12,7 +12,8 @@ cnp.import_array()  # Numpy C-API initialization
 
 cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
     cdef cppclass PyOdeintRosenbrock4:
-        size_t ny
+        const size_t ny
+        size_t nrhs, njac
         vector[double] xout
         vector[double] yout
 
@@ -23,7 +24,8 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
                         double, double) except +
 
     cdef cppclass PyOdeintDopri5:
-        size_t ny
+        const size_t ny
+        size_t nrhs, njac
         vector[double] xout
         vector[double] yout
 
@@ -34,7 +36,8 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
                         double, double) except +
 
     cdef cppclass PyOdeintBulirschStoer:
-        size_t ny
+        const size_t ny
+        size_t nrhs, njac
         vector[double] xout
         vector[double] yout
 
@@ -94,6 +97,7 @@ Integrator = {
 }
 
 requires_jac = ('rosenbrock4',)
+steppers = Integrator.keys()
 
 def adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
                        double rtol, method='rosenbrock4'):
@@ -103,7 +107,7 @@ def adaptive(rhs, jac, y0, x0, xend, dx0, double atol,
     integr = Integrator[method](rhs, jac, len(y0))
     nsteps = integr.adaptive(np.asarray(y0, dtype=np.float64),
                              x0, xend, dx0, atol, rtol)
-    return integr.get_xout(nsteps), integr.get_yout(nsteps)
+    return integr.get_xout(nsteps), integr.get_yout(nsteps), integr.get_info()
 
 
 def predefined(rhs, jac, y0, xout, double dx0, double atol,
@@ -115,4 +119,4 @@ def predefined(rhs, jac, y0, xout, double dx0, double atol,
         np.asarray(y0, dtype=np.float64),
         np.asarray(xout, dtype=np.float64),
         dx0, atol, rtol)
-    return yout
+    return yout, integr.get_info()

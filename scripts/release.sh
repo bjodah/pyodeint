@@ -19,6 +19,7 @@ env ${PKG_UPPER}_RELEASE_VERSION=$1 python setup.py sdist
 
 # All went well
 git tag -a $1 -m $1
+git push
 git push --tags
 twine upload dist/${PKG}-${1#v}.tar.gz
 echo "Remember to bump version (and commit and push)!"
