@@ -1,4 +1,4 @@
-image: bjodah/dockerfile-bjodah-scicomp:14.04b
+image: bjodah/bjodahimg:v1.0
 git:
     path: github.com/bjodah/pyodeint
 env:
