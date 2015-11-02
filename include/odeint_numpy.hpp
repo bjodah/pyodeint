@@ -173,7 +173,7 @@ odeint_numpy::PyIntegr<T1>::rhs(const vector_type &yarr, vector_type &dydx,
         throw std::runtime_error("rhs() failed");
     } else if (py_result != Py_None){
         // py_result is not None
-        // PyErr_SetString(PyExc_RuntimeError, "rhs() did not return None");
+        //PyErr_SetString(PyExc_RuntimeError, "rhs() did not return None");
         throw std::runtime_error("rhs() did not return None");
     }
     Py_DECREF(py_result);
@@ -204,8 +204,8 @@ odeint_numpy::PyIntegr<T1>::jac(const vector_type & yarr, matrix_type &Jmat,
         throw std::runtime_error("jac() failed");
     } else if (py_result != Py_None){
         // py_result is not None
-        throw std::runtime_error("jac() did not return None");
         //PyErr_SetString(PyExc_RuntimeError, "jac() did not return None");
+        throw std::runtime_error("jac() did not return None");
     }
     Py_DECREF(py_result);
 }

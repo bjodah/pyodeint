@@ -14,7 +14,7 @@ AUTHOR=$(head -n 1 AUTHORS)
 sphinx-apidoc --full --force -A "$AUTHOR" --doc-version=$(python setup.py --version) -F -o doc $PKG/ $PKG/tests/
 #sed -i 's/Contents/.. include:: ..\/README.rst\n\nContents/g' doc/index.rst
 echo ".. include:: ../README.rst" >>doc/index.rst
-sed -i "s/'sphinx.ext.viewcode',/'sphinx.ext.viewcode',\n    'numpydoc',/g" doc/conf.py
+sed -i "s/'sphinx.ext.viewcode',/'sphinx.ext.viewcode',\n    'sphinx.ext.autosummary',\n    'numpydoc',/g" doc/conf.py
 sed -i "s/alabaster/sphinx_rtd_theme/g" doc/conf.py
 if [[ $NARGS -eq 3 ]]; then
 cat <<EOF>>doc/conf.py
@@ -31,9 +31,8 @@ if 'html_context' in globals():
     html_context.update(context)
 else:
     html_context = context
-
-numpydoc_class_members_toctree = False
 EOF
 fi
+echo "numpydoc_class_members_toctree = False" >>doc/conf.py
 ABS_REPO_PATH=$(unset CDPATH && cd "$(dirname "$0")/.." && echo $PWD)
 ( cd doc; PYTHONPATH=$ABS_REPO_PATH make html )
