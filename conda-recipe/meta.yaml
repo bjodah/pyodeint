@@ -1,6 +1,6 @@
 package:
     name: pyodeint
-    version: 0.5.0.git
+    version: 0.7.0.git
 
 source:
     path: ../
