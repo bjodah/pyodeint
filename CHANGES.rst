@@ -1,3 +1,7 @@
+v0.6.0
+======
+- Changes to info dict: rename 'nrhs' -> 'nfev', 'njac' -> 'njev', added 'cpu_time', 'success'
+
 v0.5.0
 ======
 - New function signature: integrate_predefined and integrate_adaptive now

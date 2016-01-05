@@ -3,8 +3,13 @@
                  double rtol):
         if y0.size < self.thisptr.ny:
             raise ValueError("y0 too short")
-        return self.thisptr.adaptive(<PyObject*>y0, x0, xend, dx0,
-                                     atol, rtol)
+        self.success = True
+        try:
+            return self.thisptr.adaptive(<PyObject*>y0, x0, xend, dx0,
+                                         atol, rtol)
+        except:
+            self.success = False
+            raise
 
     def predefined(self, cnp.ndarray[cnp.float64_t, ndim=1] y0,
                    cnp.ndarray[cnp.float64_t, ndim=1] xout,
@@ -14,8 +19,13 @@
         cdef cnp.ndarray[cnp.float64_t, ndim=2] yout = np.empty(
             (xout.size, y0.size))
         yout[0, :] = y0
-        self.thisptr.predefined(<PyObject*>y0, <PyObject*>xout,
-                                <PyObject*>yout, dx0, atol, rtol)
+        self.success = True
+        try:
+            self.thisptr.predefined(<PyObject*>y0, <PyObject*>xout,
+                                    <PyObject*>yout, dx0, atol, rtol)
+        except:
+            self.success = False
+            raise
         return yout
 
     def get_xout(self, size_t nsteps):
@@ -37,4 +47,9 @@
         return yout
 
     def get_info(self):
-        return {'nrhs': self.thisptr.nrhs, 'njac': self.thisptr.njac}
+        return {
+            'success': self.success,
+            'nfev': self.thisptr.nrhs,
+            'njev': self.thisptr.njac,
+            'time_cpu': self.thisptr.time_cpu
+        }
