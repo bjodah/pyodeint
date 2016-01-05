@@ -64,6 +64,9 @@ def test_integrate_adaptive(method, use_jac):
     # Run twice to catch possible side-effects:
     xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
     xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
+    assert info['nfev'] > 0
+    if use_jac:
+        assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
 
@@ -82,5 +85,10 @@ def test_integrate_predefined(method, use_jac):
                                       method=method)
     yout, info = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9,
                                       method=method)
+    assert info['success']
+    assert info['time_cpu'] > 1e-9
+    assert info['nfev'] > 0
+    if use_jac:
+        assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)

@@ -3,6 +3,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
+#include <chrono>
 #include <functional>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/odeint.hpp>
@@ -46,6 +47,7 @@ namespace odeint_numpy{
     public:
         const size_t ny;
         size_t nrhs, njac;
+        double time_cpu;
         std::vector<value_type> xout;
         std::vector<value_type> yout;
         void rhs(const vector_type &yarr, vector_type &dydx, value_type xval);
@@ -67,14 +69,18 @@ namespace odeint_numpy{
 
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
             nrhs = 0; njac = 0;
-            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
@@ -84,6 +90,7 @@ namespace odeint_numpy{
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
         }
 
     };
@@ -100,14 +107,18 @@ namespace odeint_numpy{
                                     std::bind(&PyIntegr::jac, this, _1, _2, _3, _4))) {}
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
             nrhs = 0; njac = 0;
-            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
@@ -117,6 +128,7 @@ namespace odeint_numpy{
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
         }
 
     };
@@ -129,14 +141,18 @@ namespace odeint_numpy{
             PyIntegr(py_rhs, nullptr, ny, std::bind(&PyIntegr::rhs, this, _1, _2, _3)) {}
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
             nrhs = 0; njac = 0;
-            return integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
+            std::time_t cputime0 = std::clock();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
@@ -146,6 +162,7 @@ namespace odeint_numpy{
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
+            this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
         }
     };
 

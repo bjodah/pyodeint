@@ -14,6 +14,7 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
     cdef cppclass PyOdeintRosenbrock4:
         const size_t ny
         size_t nrhs, njac
+        double time_cpu
         vector[double] xout
         vector[double] yout
 
@@ -26,6 +27,7 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
     cdef cppclass PyOdeintDopri5:
         const size_t ny
         size_t nrhs, njac
+        double time_cpu
         vector[double] xout
         vector[double] yout
 
@@ -38,6 +40,7 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
     cdef cppclass PyOdeintBulirschStoer:
         const size_t ny
         size_t nrhs, njac
+        double time_cpu
         vector[double] xout
         vector[double] yout
 
@@ -51,6 +54,7 @@ cdef extern from "odeint_numpy.hpp" namespace "odeint_numpy":
 cdef class OdeintRosenbrock4:
 
     cdef PyOdeintRosenbrock4 *thisptr
+    cdef bint success
 
     def __cinit__(self, object rhs, object jac, size_t ny):
         self.thisptr = new PyOdeintRosenbrock4(<PyObject *>rhs,
@@ -65,6 +69,7 @@ ${INTEGRATOR_METHODS}
 cdef class OdeintDopri5:
 
     cdef PyOdeintDopri5 *thisptr
+    cdef bint success
 
     def __cinit__(self, object rhs, object jac, size_t ny):
         # silently drop jac, maybe not the best design..
@@ -79,6 +84,7 @@ ${INTEGRATOR_METHODS}
 cdef class OdeintBulirschStoer:
 
     cdef PyOdeintBulirschStoer *thisptr
+    cdef bint success
 
     def __cinit__(self, object rhs, object jac, size_t ny):
         # silently drop jac, maybe not the best design..
