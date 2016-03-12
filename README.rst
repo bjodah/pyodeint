@@ -80,6 +80,10 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
 For more examples see `examples/ <https://github.com/bjodah/pyodeint/tree/master/examples>`_, and rendered jupyter notebooks here:
 `<http://hera.physchem.kth.se/~pyodeint/branches/master/examples>`_
 
+See also
+--------
+`pyodesys <https://github.com/bjodah/pyodesys>`_ for how to automatically
+generate the jacobian callback function (and easily swtich to other solvers).
 
 License
 -------

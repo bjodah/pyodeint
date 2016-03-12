@@ -20,14 +20,14 @@ def missing_or_any_other_newer(path, other_paths):
     provided reference paths.
 
     Parameters
-    ==========
+    ----------
     path: string
-        path to path which might be missing or too old
+        Path to path which might be missing or too old.
     other_paths: iterable of strings
-        reference paths
+        Reference paths.
 
     Returns
-    =======
+    -------
     True if path is older or missing.
     """
     if not os.path.exists(path):
