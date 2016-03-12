@@ -1,28 +1,28 @@
 package:
-    name: pyodeint
-    version: 0.7.0.git
+  name: pyodeint
+  version: 0.7.0.git
 
 source:
-    path: ../
+  path: ../
 
 build:
-    number: 0
+  number: 0
 
 requirements:
-    build:
-        - python
-        - numpy
-        - boost
-        - cython
-    run:
-        - numpy
-        - python
+  build:
+    - python
+    - numpy
+    - boost
+    - cython
+  run:
+    - numpy
+    - python
 
 test:
-    imports:
-        - pyodeint
-    requires:
-        - pytest
+  imports:
+    - pyodeint
+  requires:
+    - pytest
 
 about:
     home: https://github.com/bjodah/pyodeint
