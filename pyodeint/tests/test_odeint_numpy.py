@@ -92,3 +92,23 @@ def test_integrate_predefined(method, use_jac):
         assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
+
+
+def test_odeint_v2_issue_189():
+    # see https://github.com/headmyshoulder/odeint-v2/issues/189
+    def f(t, x, dxdt):
+        dxdt[0] = -101.0 * x[0] - 100.0 * x[1]
+        dxdt[1] = x[0]
+
+    def j(t, y, J, dfdt):
+        J[0, 0] = -101.0
+        J[0, 1] = -100.0
+        J[1, 0] = 1.0
+        J[1, 1] = 0.0
+        dfdt[0] = 0
+        dfdt[1] = 0
+
+    yout, info = integrate_predefined(
+        f, j, [2.0, 1.0], np.linspace(0, 50, 5000), 1e-9,
+        1e-6, 1e-6, method='rosenbrock4')
+    assert info['nfev'] < 3000

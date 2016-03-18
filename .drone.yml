@@ -1,6 +1,8 @@
 build:
   image: bjodah/bjodahimg:v1.1
   commands:
+    - git submodule init
+    - git submodule update
     - ./scripts/ci.sh
     - (cd examples/; ipython2 nbconvert --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
     - (cd examples/; ../scripts/render_index.sh *.html)
