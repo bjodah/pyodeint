@@ -8,7 +8,6 @@ import shutil
 import sys
 from distutils.core import setup
 from distutils.extension import Extension
-import numpy as np
 
 
 pkg_name = 'pyodeint'
@@ -45,6 +44,7 @@ def missing_or_any_other_newer(path, other_paths):
 ext_modules = []
 if '--help' not in sys.argv[1:] and sys.argv[1] not in (
         '--help-commands', 'egg_info', 'clean', '--version'):
+    import numpy as np
     USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx.template')
     if USE_CYTHON:
         source = 'pyodeint/_odeint_numpy.pyx'
