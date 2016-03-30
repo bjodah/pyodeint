@@ -4,6 +4,8 @@ if [[ "$CI_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
     eval export ${PKG_NAME^^}_RELEASE_VERSION=\$CI_BRANCH
     echo ${CI_BRANCH} | tail -c +2 > __conda_version__.txt
 fi
+python2.7 -m pip install http://cython.org/release/Cython-0.24rc0.tar.gz
+python3.4 -m pip install http://cython.org/release/Cython-0.24rc0.tar.gz
 python2 setup.py sdist
 pip install dist/*.tar.gz
 (cd /; python2.7 -m pytest --pyargs $PKG_NAME)
