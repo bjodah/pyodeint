@@ -50,7 +50,14 @@ def _get_f_j(k):
         dfdx_out[2] = 0
     return f, j
 
-methods = [('rosenbrock4', True), ('dopri5', False), ('bs', False)]
+methods = [
+    ('dopri5', False),
+    ('bs', False),
+    # rosenbrock4 suffered a massive performance regression:
+    #   - https://github.com/headmyshoulder/odeint-v2/issues/189
+    #   - https://github.com/bjodah/pyodeint/pull/16
+    # ('rosenbrock4', True)
+]
 
 
 @pytest.mark.parametrize("method,use_jac", methods)

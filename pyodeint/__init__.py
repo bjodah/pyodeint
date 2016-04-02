@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Python binding for odeint from boost.
+"""
+
 from __future__ import absolute_import
 
 from ._odeint_numpy import adaptive, predefined, requires_jac, steppers

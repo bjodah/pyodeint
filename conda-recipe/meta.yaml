@@ -23,7 +23,9 @@ test:
     - pyodeint
   requires:
     - pytest
+  commands:
+    - python -m pytest --pyargs pyodeint
 
 about:
-    home: https://github.com/bjodah/pyodeint
-    license: Simplified BSD license
+  home: https://github.com/bjodah/pyodeint
+  license: Simplified BSD license
