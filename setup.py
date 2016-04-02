@@ -3,15 +3,19 @@
 
 # Tested with boost v1.59.0
 
+import io
 import os
 import shutil
 import sys
-from distutils.core import setup
-from distutils.extension import Extension
-import numpy as np
+from setuptools import setup
+from setuptools.extension import Extension
 
 
 pkg_name = 'pyodeint'
+
+
+def _path_under_setup(*args):
+    return os.path.join(os.path.dirname(__file__), *args)
 
 
 def missing_or_any_other_newer(path, other_paths):
@@ -40,24 +44,28 @@ def missing_or_any_other_newer(path, other_paths):
             return True
     return False
 
+USE_CYTHON = os.path.exists(_path_under_setup(
+    'pyodeint', '_odeint_numpy.pyx.template'))
 
 # Cythonize .pyx file if it exists (not in source distribution)
 ext_modules = []
 if '--help' not in sys.argv[1:] and sys.argv[1] not in (
         '--help-commands', 'egg_info', 'clean', '--version'):
-    USE_CYTHON = os.path.exists('pyodeint/_odeint_numpy.pyx.template')
+    import numpy as np
     if USE_CYTHON:
-        source = 'pyodeint/_odeint_numpy.pyx'
+        source = _path_under_setup('pyodeint', '_odeint_numpy.pyx')
         # render source from template:
         if missing_or_any_other_newer(source, [source + '.template',
                                                source + '.methods']):
-            open(source, 'wt').write(
+            io.open(source, 'wt', encoding='utf-8').write(
                 '# rendered from template, do not edit\n' +
-                open(source + '.template', 'rt').read().replace(
-                    '${INTEGRATOR_METHODS}',
-                    open(source + '.methods', 'rt').read()))
+                io.open(source + '.template', 'rt',
+                        encoding='utf-8').read().replace(
+                            '${INTEGRATOR_METHODS}',
+                            io.open(source + '.methods', 'rt',
+                                    encoding='utf-8').read()))
     else:
-        source = 'pyodeint/_odeint_numpy.cpp'
+        source = _path_under_setup('pyodeint', '_odeint_numpy.cpp')
 
     ext_modules = [Extension('pyodeint._odeint_numpy',
                              [source],
@@ -69,22 +77,22 @@ if '--help' not in sys.argv[1:] and sys.argv[1] not in (
         ext_modules = cythonize(ext_modules, include_path=['./include'],
                                 gdb_debug=True)
 
-PYODEINT_RELEASE_VERSION = os.environ.get('PYODEINT_RELEASE_VERSION', '')
+RELEASE_VERSION = os.environ.get('PYODEINT_RELEASE_VERSION', '')
 
 # http://conda.pydata.org/docs/build.html#environment-variables-set-during-the-build-process
 CONDA_BUILD = os.environ.get('CONDA_BUILD', '0') == '1'
 if CONDA_BUILD:
     try:
-        PYODEINT_RELEASE_VERSION = 'v' + open(
+        RELEASE_VERSION = 'v' + open(
             '__conda_version__.txt', 'rt').readline().rstrip()
     except IOError:
         pass
 
-release_py_path = os.path.join(pkg_name, '_release.py')
+release_py_path = _path_under_setup(pkg_name, '_release.py')
 
-if len(PYODEINT_RELEASE_VERSION) > 1 and PYODEINT_RELEASE_VERSION[0] == 'v':
+if len(RELEASE_VERSION) > 1 and RELEASE_VERSION[0] == 'v':
     TAGGED_RELEASE = True
-    __version__ = PYODEINT_RELEASE_VERSION[1:]
+    __version__ = RELEASE_VERSION[1:]
 else:
     TAGGED_RELEASE = False
     # read __version__ attribute from _release.py:
@@ -102,16 +110,26 @@ tests = [
     'pyodeint.tests',
 ]
 
+with io.open(_path_under_setup(pkg_name, '__init__.py'), 'rt',
+             encoding='utf-8') as f:
+    short_description = f.read().split('"""')[1].split('\n')[1]
+assert 10 < len(short_description) < 255
+long_descr = io.open(_path_under_setup('README.rst'), encoding='utf-8').read()
+assert len(long_descr) > 100
+
 setup_kwargs = dict(
     name=pkg_name,
     version=__version__,
-    description='Python binding for odeint from boost.',
+    description=short_description,
+    long_description=long_descr,
     classifiers=classifiers,
     author='Björn Dahlgren',
     author_email='bjodah@DELETEMEgmail.com',
     license='BSD',
     url='https://github.com/bjodah/' + pkg_name,
     packages=[pkg_name] + tests,
+    install_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
+    setup_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     ext_modules=ext_modules,
 )
 
