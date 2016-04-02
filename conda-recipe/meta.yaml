@@ -12,7 +12,7 @@ requirements:
   build:
     - python
     - numpy
-    - boost
+    - boost ==1.57.0
     - cython
   run:
     - numpy

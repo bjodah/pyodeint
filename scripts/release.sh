@@ -8,10 +8,6 @@ if [[ $1 != v* ]]; then
     >&2 echo "Argument does not start with 'v'"
     exit 1
 fi
-if [[ $# -ne 2 ]]; then
-    >&2 echo "Need 2 arguments: vX.Y.Z ~/miniconda/bin"
-    exit 1
-fi
 ./scripts/check_clean_repo_on_master.sh
 VERSION=${1#v}
 CONDA_PATH=$2
