@@ -47,6 +47,11 @@ Binary distribution is available here:
 Source distribution is available here:
 `<https://pypi.python.org/pypi/pyodeint>`_
 
+here is an example of how to build from source::
+
+   $ CPLUS_INCLUDE_PATH=~/Downloads/boost_1_59_0 python3 setup.py build_ext -i
+
+
 Examples
 --------
 The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_der_pol.py>`_)
