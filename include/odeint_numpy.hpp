@@ -8,6 +8,17 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/odeint.hpp>
 
+#if !defined(PYODEINT_NO_BOOST_CHECK)
+  #if BOOST_VERSION / 100000 == 1
+    #if BOOST_VERSION / 100 % 1000 == 60
+      #error "Boost v 1.60 has a bug in rosenbrock stepper (see https://github.com/headmyshoulder/odeint-v2/issues/189) set PYODEINT_NO_BOOST_CHECK to ignore"
+    #endif
+    #if BOOST_VERSION / 100 % 1000 == 61
+      #error "Boost v 1.61 has a bug in rosenbrock stepper (see https://github.com/headmyshoulder/odeint-v2/issues/189) set PYODEINT_NO_BOOST_CHECK to ignore"
+    #endif
+  #endif
+#endif
+
 namespace odeint_numpy{
     using namespace std::placeholders;
 

@@ -56,7 +56,8 @@ methods = [
     # rosenbrock4 suffered a massive performance regression:
     #   - https://github.com/headmyshoulder/odeint-v2/issues/189
     #   - https://github.com/bjodah/pyodeint/pull/16
-    # ('rosenbrock4', True)
+    # this affects odeint provided by Boost 1.60 and 1.61
+    ('rosenbrock4', True)
 ]
 
 
