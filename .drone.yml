@@ -1,19 +1,9 @@
 build:
   image: bjodah/bjodahimg:v1.1
   commands:
-    - ./scripts/ci.sh
-    - (cd examples/; ipython2 nbconvert --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
-    - (cd examples/; ../scripts/render_index.sh *.html)
-    - ./scripts/generate_docs.sh
-    - ./scripts/prepare_deploy.sh
-
-deploy:
-
-  rsync:
-    host: hera.physchem.kth.se
-    port: 22
-    user: pyodeint
-    source: deploy/
-    target: ~
-    recursive: true
-    delete: false
+    - git clone git://github.com/headmyshoulder/odeint-v2
+    - (cd odeint-v2/; git checkout 936af85)  # works: added max_dt to bs dense out
+    #- (cd odeint-v2/; git checkout 60cd098)  # fails: add max_dt support to generation functions + test
+    - ln -s $(pwd)/odeint-v2/include/boost include/boost
+    - python setup.py build_ext -i
+    - timeout 15 python -m pytest -k issue_189
