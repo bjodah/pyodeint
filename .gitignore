@@ -12,3 +12,5 @@ pyodeint/_odeint_numpy.pyx
 __conda_version__.txt
 **/.ipynb_checkpoints/
 **.egg-info
+tests/catch.hpp
+tests/test_odeint_anyode

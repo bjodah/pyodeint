@@ -16,6 +16,9 @@
     #if BOOST_VERSION / 100 % 1000 == 61
       #error "Boost v 1.61 has a bug in rosenbrock stepper (see https://github.com/headmyshoulder/odeint-v2/issues/189) set PYODEINT_NO_BOOST_CHECK to ignore"
     #endif
+    #if BOOST_VERSION / 100 % 1000 == 62
+      #error "Boost v 1.62 has a bug in rosenbrock stepper (see https://github.com/headmyshoulder/odeint-v2/issues/189) set PYODEINT_NO_BOOST_CHECK to ignore"
+    #endif
   #endif
 #endif
 
@@ -58,7 +61,7 @@ namespace odeint_numpy{
     public:
         const size_t ny;
         size_t nrhs, njac;
-        double time_cpu;
+        double time_cpu, time_wall;
         std::vector<value_type> xout;
         std::vector<value_type> yout;
         void rhs(const vector_type &yarr, vector_type &dydx, value_type xval);
@@ -81,17 +84,21 @@ namespace odeint_numpy{
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
             nrhs = 0; njac = 0;
             auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
             return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
@@ -102,6 +109,8 @@ namespace odeint_numpy{
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
         }
 
     };
@@ -119,17 +128,21 @@ namespace odeint_numpy{
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
             nrhs = 0; njac = 0;
             auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
             return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
@@ -140,6 +153,8 @@ namespace odeint_numpy{
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
         }
 
     };
@@ -153,17 +168,21 @@ namespace odeint_numpy{
         size_t adaptive(PyObject *py_y0, value_type x0, value_type xend,
                    value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
             nrhs = 0; njac = 0;
             auto result = integrate_adaptive(stepper, this->system, y0, x0, xend, dx0, obs_cb);
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
             return result;
         }
 
         void predefined(PyObject *py_y0, PyObject *py_xout, PyObject *py_yout,
                         value_type dx0, value_type atol, value_type rtol){
             std::time_t cputime0 = std::clock();
+            auto t_start = std::chrono::high_resolution_clock::now();
             vector_type y0 = copy_from_1d_pyarray(py_y0);
             vector_type xout = copy_from_1d_pyarray(py_xout);
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
@@ -174,6 +193,8 @@ namespace odeint_numpy{
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
             this->time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
+            this->time_wall = std::chrono::duration<double>(
+                std::chrono::high_resolution_clock::now() - t_start).count();
         }
     };
 

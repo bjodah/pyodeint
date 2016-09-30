@@ -1,3 +1,11 @@
+v0.7.0
+======
+- Refactored wrappers, added "wall_time" entry in info-dict from integration.
+
+v0.6.1
+======
+- Fixes to setup.py and conda recipe
+
 v0.6.0
 ======
 - Changes to info dict: rename 'nrhs' -> 'nfev', 'njac' -> 'njev', added 'cpu_time', 'success'

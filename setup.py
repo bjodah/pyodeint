@@ -15,7 +15,7 @@ pkg_name = 'pyodeint'
 
 
 def _path_under_setup(*args):
-    return os.path.join(os.path.dirname(__file__), *args)
+    return os.path.join(*args)
 
 
 def missing_or_any_other_newer(path, other_paths):
@@ -67,17 +67,17 @@ if '--help' not in sys.argv[1:] and sys.argv[1] not in (
     else:
         source = _path_under_setup('pyodeint', '_odeint_numpy.cpp')
 
-    ext_modules = [Extension('pyodeint._odeint_numpy',
-                             [source],
-                             language='c++',
-                             extra_compile_args=['-std=c++11'],
-                             include_dirs=[np.get_include(), './include'])]
+    ext_modules = [Extension(
+        'pyodeint._odeint_numpy', [source], language='c++',
+        extra_compile_args=['-std=c++11'],
+        include_dirs=[np.get_include(), 'pyodeint/include']
+    )]
     if USE_CYTHON:
         from Cython.Build import cythonize
-        ext_modules = cythonize(ext_modules, include_path=['./include'],
-                                gdb_debug=True)
+        ext_modules = cythonize(ext_modules, include_path=[
+            _path_under_setup('pyodeint', 'include')], gdb_debug=True)
 
-RELEASE_VERSION = os.environ.get('PYODEINT_RELEASE_VERSION', '')
+RELEASE_VERSION = os.environ.get('%s_RELEASE_VERSION' % pkg_name.upper(), '')
 
 # http://conda.pydata.org/docs/build.html#environment-variables-set-during-the-build-process
 CONDA_BUILD = os.environ.get('CONDA_BUILD', '0') == '1'
@@ -128,6 +128,7 @@ setup_kwargs = dict(
     license='BSD',
     url='https://github.com/bjodah/' + pkg_name,
     packages=[pkg_name] + tests,
+    include_package_data=True,
     install_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     setup_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     ext_modules=ext_modules,
