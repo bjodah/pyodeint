@@ -97,7 +97,7 @@ namespace odeint_numpy{
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(atol, rtol);
             nrhs = 0; njac = 0;
             for (size_t ix=0; ix < xout.size()-1; ++ix){
-                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                integrate_adaptive(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
@@ -135,7 +135,7 @@ namespace odeint_numpy{
             auto stepper = make_dense_output<rosenbrock4<value_type> >(atol, rtol);
             nrhs = 0; njac = 0;
             for (size_t ix=0; ix < xout.size()-1; ++ix){
-                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                integrate_adaptive(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
@@ -169,7 +169,7 @@ namespace odeint_numpy{
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type>>(atol, rtol);
             nrhs = 0; njac = 0;
             for (size_t ix=0; ix < xout.size()-1; ++ix){
-                integrate_const(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
+                integrate_adaptive(stepper, this->system, y0, xout[ix], xout[ix+1], dx0);
                 std::copy(y0.begin(), y0.end(),
                           static_cast<double*>(PyArray_GETPTR2(py_yout, ix+1, 0)));
             }
