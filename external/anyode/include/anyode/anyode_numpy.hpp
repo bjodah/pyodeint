@@ -7,8 +7,6 @@
 
 namespace AnyODE {
     struct PyOdeSys : public AnyODE::OdeSysBase {
-        std::unordered_map<std::string, double> last_integration_info_dbl;
-
         int ny, mlower=-1, mupper=-1, nroots=0;
         PyObject *py_rhs, *py_jac, *py_roots, *py_kwargs;
         unsigned nfev=0, njev=0;

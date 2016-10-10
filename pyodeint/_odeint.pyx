@@ -8,9 +8,8 @@ cnp.import_array()  # Numpy C-API initialization
 
 import numpy as np
 
-from odeint_anyode cimport simple_adaptive, simple_predefined, styp_from_name
-from anyode cimport OdeSysBase
 from anyode_numpy cimport PyOdeSys
+from odeint_anyode cimport simple_adaptive, simple_predefined, styp_from_name
 
 steppers = ('rosenbrock4', 'dopri5', 'bulirsch_stoer')
 requires_jac = ('rosenbrock4',)

@@ -18,6 +18,7 @@ def get_include():
     return resource_filename(Requirement.parse(__name__),
                              '%s/include' % __name__)
 
+
 def _bs(kwargs):
     # DEPRECATED accept 'bs' as short for 'bulirsh_stoer'
     if kwargs.get('method', '-') == 'bs':

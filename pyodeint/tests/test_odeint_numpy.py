@@ -99,5 +99,5 @@ def test_integrate_predefined(method, use_jac):
         assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
-    assert info['time_wall'] > 1e-9
-    assert info['time_cpu'] > 1e-9
+    assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
+    assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer

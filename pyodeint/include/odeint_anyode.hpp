@@ -332,7 +332,8 @@ namespace odeint_anyode{
         auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
         auto result = integr.adaptive(x0, xend, y0);
         odesys->last_integration_info.clear();
-        set_integration_info(odesys, integr);
+        odesys->last_integration_info_dbl.clear();
+        set_integration_info<OdeSys>(odesys, integr);
         return result;
     }
 
@@ -363,6 +364,7 @@ namespace odeint_anyode{
         auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
         integr.predefined(nout, xout, y0, yout);
         odesys->last_integration_info.clear();
+        odesys->last_integration_info_dbl.clear();
         set_integration_info(odesys, integr);
     }
 
