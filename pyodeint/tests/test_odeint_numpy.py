@@ -35,7 +35,7 @@ def _get_f_j(k):
         fout[1] = k0*y[0] - k1*y[1]
         fout[2] = k1*y[1] - k2*y[2]
 
-    def j(t, y, jmat_out, dfdx_out):
+    def j(t, y, jmat_out, dfdx_out, fy=None):
         jmat_out[0, 0] = -k0
         jmat_out[0, 1] = 0
         jmat_out[0, 2] = 0
@@ -94,9 +94,10 @@ def test_integrate_predefined(method, use_jac):
     yout, info = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9,
                                       method=method)
     assert info['success']
-    assert info['time_cpu'] > 1e-9
     assert info['nfev'] > 0
     if use_jac:
         assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
+    assert info['time_wall'] > 1e-9
+    assert info['time_cpu'] > 1e-9

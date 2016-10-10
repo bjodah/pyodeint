@@ -17,7 +17,7 @@ def get_f_and_j(mu):
         dydt[0] = y[1]
         dydt[1] = -y[0] + mu*y[1]*(1 - y[0]**2)
 
-    def j(t, y, Jmat, dfdt):
+    def j(t, y, Jmat, dfdt, fy=None):
         Jmat[0, 0] = 0
         Jmat[0, 1] = 1
         Jmat[1, 0] = -1 - mu*2*y[1]*y[0]
@@ -34,10 +34,10 @@ def integrate_ivp(u0=1.0, v0=0.0, mu=1.0, tend=10.0, dt0=1e-8, nt=0,
     if nt > 1:
         tout = np.linspace(t0, tend, nt)
         yout, info = integrate_predefined(
-            f, j, [u0, v0], tout, dt0, atol, rtol, method=method)
+            f, j, [u0, v0], tout, dt0, atol, rtol, method=method, nsteps=1000)
     else:
         tout, yout, info = integrate_adaptive(
-            f, j, [u0, v0], t0, tend, dt0, atol, rtol, method=method)
+            f, j, [u0, v0], t0, tend, dt0, atol, rtol, method=method, nsteps=1000)
     if verbose:
         print(info)
     if plot:

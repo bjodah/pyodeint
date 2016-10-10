@@ -300,9 +300,9 @@ namespace odeint_anyode{
     };
 
     template <class OdeSys>
-    void set_integration_info(std::unordered_map<std::string, int>& info, const Integr<OdeSys>& integrator){
-        info["time_wall"] = integrator.m_time_wall;
-        info["time_cpu"] = integrator.m_time_cpu;
+    void set_integration_info(OdeSys * odesys, const Integr<OdeSys>& integrator){
+        odesys->last_integration_info_dbl["time_wall"] = integrator.m_time_wall;
+        odesys->last_integration_info_dbl["time_cpu"] = integrator.m_time_cpu;
     }
 
     template <class OdeSys>
@@ -330,10 +330,9 @@ namespace odeint_anyode{
         if (mxsteps == 0)
             mxsteps = 500;
         auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
-        odesys->integrator = static_cast<void*>(&integr);
         auto result = integr.adaptive(x0, xend, y0);
         odesys->last_integration_info.clear();
-        set_integration_info(odesys->last_integration_info, integr);
+        set_integration_info(odesys, integr);
         return result;
     }
 
@@ -362,10 +361,9 @@ namespace odeint_anyode{
         if (mxsteps == 0)
             mxsteps = 500;
         auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
-        odesys->integrator = static_cast<void*>(&integr);
         integr.predefined(nout, xout, y0, yout);
         odesys->last_integration_info.clear();
-        set_integration_info(odesys->last_integration_info, integr);
+        set_integration_info(odesys, integr);
     }
 
 }

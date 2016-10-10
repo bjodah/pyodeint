@@ -9,6 +9,9 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
     cdef cppclass StepType:
         pass
 
+    cdef cppclass Integr[U]:
+        double m_time_cpu, m_time_wall
+
     cdef void simple_predefined[U](
         U * const, const double, const double, const StepType, const double * const,
         const size_t, const double * const, double * const, const double, long int

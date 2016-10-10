@@ -15,67 +15,27 @@ pkg_name = 'pyodeint'
 
 
 def _path_under_setup(*args):
-    return os.path.join(*args)
+    return os.path.join(os.path.dirname(__file__), *args)
 
-
-def missing_or_any_other_newer(path, other_paths):
-    """
-    Investigate if path is non-existant or older than any
-    provided reference paths.
-
-    Parameters
-    ----------
-    path: string
-        Path to path which might be missing or too old.
-    other_paths: iterable of strings
-        Reference paths.
-
-    Returns
-    -------
-    True if path is older or missing.
-    """
-    if not os.path.exists(path):
-        return True
-    path_mtime = os.path.getmtime(path)
-    for other_path in map(os.path.abspath, other_paths):
-        if os.path.getmtime(other_path) - 1e-6 >= path_mtime:
-            # 1e-6 is needed beacuse of:
-            # http://stackoverflow.com/questions/17086426/
-            return True
-    return False
-
-USE_CYTHON = os.path.exists(_path_under_setup(
-    'pyodeint', '_odeint_numpy.pyx.template'))
+USE_CYTHON = os.path.exists(_path_under_setup('pyodeint', '_odeint.pyx'))
+package_include = os.path.join(pkg_name, 'include')
 
 # Cythonize .pyx file if it exists (not in source distribution)
 ext_modules = []
-if '--help' not in sys.argv[1:] and sys.argv[1] not in (
+if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
         '--help-commands', 'egg_info', 'clean', '--version'):
     import numpy as np
-    if USE_CYTHON:
-        source = _path_under_setup('pyodeint', '_odeint_numpy.pyx')
-        # render source from template:
-        if missing_or_any_other_newer(source, [source + '.template',
-                                               source + '.methods']):
-            io.open(source, 'wt', encoding='utf-8').write(
-                '# rendered from template, do not edit\n' +
-                io.open(source + '.template', 'rt',
-                        encoding='utf-8').read().replace(
-                            '${INTEGRATOR_METHODS}',
-                            io.open(source + '.methods', 'rt',
-                                    encoding='utf-8').read()))
-    else:
-        source = _path_under_setup('pyodeint', '_odeint_numpy.cpp')
-
-    ext_modules = [Extension(
-        'pyodeint._odeint_numpy', [source], language='c++',
-        extra_compile_args=['-std=c++11'],
-        include_dirs=[np.get_include(), 'pyodeint/include']
-    )]
+    ext = '.pyx' if USE_CYTHON else '.cpp'
+    sources = [os.path.join(pkg_name, '_odeint' + ext)]
+    ext_modules = [Extension('%s._odeint' % pkg_name, sources)]
     if USE_CYTHON:
         from Cython.Build import cythonize
         ext_modules = cythonize(ext_modules, include_path=[
-            _path_under_setup('pyodeint', 'include')], gdb_debug=True)
+            package_include,
+            os.path.join('external', 'anyode', 'cython_def')
+        ])
+    ext_modules[0].include_dirs = [package_include, np.get_include(),
+                                   os.path.join('external', 'anyode', 'include')]
 
 RELEASE_VERSION = os.environ.get('%s_RELEASE_VERSION' % pkg_name.upper(), '')
 

@@ -1,5 +1,6 @@
 v0.7.0
 ======
+- Jacobian callback has a new signature (fy=None, never passed by odeint, but by other integrators)
 - Refactored wrappers, added "wall_time" entry in info-dict from integration.
 
 v0.6.1
