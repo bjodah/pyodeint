@@ -93,6 +93,7 @@ setup_kwargs = dict(
     include_package_data=True,
     install_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     setup_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
+    extras_require={'docs': ['Sphinx', 'sphinx_rtd_theme']},
     ext_modules=ext_modules,
 )
 

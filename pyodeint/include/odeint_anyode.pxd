@@ -14,7 +14,7 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
 
     cdef void simple_predefined[U](
         U * const, const double, const double, const StepType, const double * const,
-        const size_t, const double * const, double * const, const double, long int
+        const size_t, const double * const, double * const, long int, const double
     ) except +
 
     cdef pair[vector[double], vector[double]] simple_adaptive[U](
@@ -25,8 +25,8 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         const double * const,
         const double,
         const double,
-        const double,
-        long int
+        long int,
+        const double
     ) except +
 
     cdef StepType styp_from_name(string) except +

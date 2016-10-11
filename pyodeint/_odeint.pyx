@@ -24,7 +24,7 @@ cdef dict get_last_info(PyOdeSys * odesys):
     return info
 
 
-def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t, ndim=1] y0, double x0, double xend,
+def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
              double dx0, double atol, double rtol, str method='rosenbrock4', int nsteps=500):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
@@ -34,18 +34,18 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t, ndim=1] y0, double x0, double 
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
 
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0)
     try:
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-            &y0[0], x0, xend, dx0, nsteps))
+            &y0[0], x0, xend, nsteps, dx0))
         return xout, yout.reshape(xout.size, ny), get_last_info(odesys)
     finally:
         del odesys
 
 
 def predefined(rhs, jac,
-               cnp.ndarray[cnp.float64_t, ndim=1] y0,
+               cnp.ndarray[cnp.float64_t] y0,
                cnp.ndarray[cnp.float64_t, ndim=1] xout,
                double dx0, double atol,
                double rtol, method='rosenbrock4', int nsteps=500):
@@ -57,12 +57,11 @@ def predefined(rhs, jac,
         raise ValueError("Method requires explicit jacobian callback")
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0)
     try:
         yout = np.empty((xout.size, ny))
         simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-                                    &y0[0], xout.size, &xout[0], &yout[0, 0],
-                                    dx0, nsteps)
+                                    &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0)
         return yout, get_last_info(odesys)
     finally:
         del odesys

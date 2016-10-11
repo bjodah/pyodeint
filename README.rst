@@ -74,7 +74,7 @@ The classic van der Pol oscillator (see `examples/van_der_pol.py <examples/van_d
    ...
    >>> y0 = [1, 0]; tend=10.0; dt0=1e-8; t0=0.0; atol=1e-8; rtol=1e-8
    >>> tout, yout, info = integrate_adaptive(f, j, y0, t0, tend, dt0, atol, rtol,
-   ...                                       method='rosenbrock4')
+   ...                                       method='rosenbrock4', nsteps=1000)
    >>> import matplotlib.pyplot as plt
    >>> series = plt.plot(tout, yout)
    >>> plt.show()  # doctest: +SKIP

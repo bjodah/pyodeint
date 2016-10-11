@@ -22,9 +22,10 @@ TEST_CASE( "decay_adaptive", "[simple_adaptive]" ) {
     Decay odesys(1.0);
     double y0 = 1.0;
     double dx0 = 1e-9;
+    long int mxsteps = 500;
     auto tout_yout = odeint_anyode::simple_adaptive(&odesys, 1e-10, 1e-10,
                                                     odeint_anyode::StepType::dopri5,
-                                                    &y0, 0.0, 1.0, dx0);
+                                                    &y0, 0.0, 1.0, mxsteps, dx0);
     auto& tout = tout_yout.first;
     auto& yout = tout_yout.second;
     REQUIRE( tout.size() == yout.size() );
@@ -40,9 +41,10 @@ TEST_CASE( "decay_adaptive_dx_max", "[simple_adaptive]" ) {
     Decay odesys(1.0);
     double y0 = 1.0;
     double dx0 = 1e-9;
+    long int mxsteps = 500;
     auto tout_yout = odeint_anyode::simple_adaptive(&odesys, 1e-10, 1e-10,
                                                     odeint_anyode::StepType::dopri5,
-                                                    &y0, 0.0, 1.0, dx0); // , 0.0, 1e-3, 1100);
+                                                    &y0, 0.0, 1.0, mxsteps, dx0); // , 0.0, 1e-3, 1100);
     auto& tout = tout_yout.first;
     auto& yout = tout_yout.second;
     REQUIRE( tout.size() == yout.size() );

@@ -7,11 +7,15 @@
 
 namespace AnyODE {
     struct PyOdeSys : public AnyODE::OdeSysBase {
-        int ny, mlower=-1, mupper=-1, nroots=0;
+        int ny;
         PyObject *py_rhs, *py_jac, *py_roots, *py_kwargs;
+        int mlower, mupper, nroots;
         unsigned nfev=0, njev=0;
-        PyOdeSys(int ny, PyObject * py_rhs, PyObject * py_jac=nullptr, PyObject * py_roots=nullptr, PyObject * py_kwargs=nullptr) :
-            ny(ny), py_rhs(py_rhs), py_jac(py_jac), py_roots(py_roots), py_kwargs(py_kwargs) {
+        PyOdeSys(int ny, PyObject * py_rhs, PyObject * py_jac=nullptr, PyObject * py_roots=nullptr,
+                 PyObject * py_kwargs=nullptr, int mlower=-1, int mupper=-1, int nroots=0) :
+            ny(ny), py_rhs(py_rhs), py_jac(py_jac), py_roots(py_roots),
+            py_kwargs(py_kwargs), mlower(mlower), mupper(mupper), nroots(nroots)
+        {
             if (py_rhs == nullptr)
                 throw std::runtime_error("py_rhs must not be nullptr");
             Py_INCREF(py_rhs);

@@ -314,8 +314,9 @@ namespace odeint_anyode{
                     const double * const y0,
                     const double x0,
                     const double xend,
-                    double dx0=0.0,
-                    long int mxsteps=0)
+                    long int mxsteps=0,
+                    double dx0=0.0
+                    )
                     //,
                     // const double dx_min=0.0,
                     // const double dx_max=0.0,
@@ -346,12 +347,11 @@ namespace odeint_anyode{
                            const std::size_t nout,
                            const double * const xout,
                            double * const yout,
-                           double dx0=0.0,
-                           long int mxsteps=0)
-                           // ,
+                           long int mxsteps=0,
+                           double dx0=0.0
+                           )
                            // const double dx_min=0.0,
                            // const double dx_max=0.0,
-                           // long int mxsteps=0)
     {
         if (dx0 == 0.0){
             if (xout[0] == 0)
