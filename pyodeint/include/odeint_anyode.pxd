@@ -13,8 +13,16 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         double m_time_cpu, m_time_wall
 
     cdef void simple_predefined[U](
-        U * const, const double, const double, const StepType, const double * const,
-        const size_t, const double * const, double * const, long int, const double
+        U * const,
+        const double,
+        const double,
+        const StepType,
+        const double * const,
+        const size_t,
+        const double * const,
+        double * const,
+        long int,
+        const double
     ) except +
 
     cdef pair[vector[double], vector[double]] simple_adaptive[U](
