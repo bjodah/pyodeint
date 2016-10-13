@@ -5,10 +5,25 @@ Python binding for odeint from boost.
 
 from __future__ import absolute_import
 
-from ._odeint_numpy import adaptive, predefined, requires_jac, steppers
-from ._util import _check_callable, _check_indexing
+import numpy as np
+
+from ._odeint import adaptive, predefined, requires_jac, steppers
+from ._util import _check_callable, _check_indexing, _ensure_5args
 
 from ._release import __version__
+
+
+def get_include():
+    from pkg_resources import resource_filename, Requirement
+    return resource_filename(Requirement.parse(__name__),
+                             '%s/include' % __name__)
+
+
+def _bs(kwargs):
+    # DEPRECATED accept 'bs' as short for 'bulirsh_stoer'
+    if kwargs.get('method', '-') == 'bs':
+        kwargs['method'] = 'bulirsch_stoer'
+    return kwargs
 
 
 def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
@@ -52,13 +67,14 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
         info: dictionary with information about the integration
     """
     # Sanity checks to reduce risk of having a segfault:
+    jac = _ensure_5args(jac)
     if check_callable:
         _check_callable(rhs, jac, x0, y0)
 
     if check_indexing:
         _check_indexing(rhs, jac, x0, y0)
 
-    return adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol, **kwargs)
+    return adaptive(rhs, jac, np.asarray(y0, dtype=np.float64), x0, xend, dx0, atol, rtol, **_bs(kwargs))
 
 
 def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
@@ -99,10 +115,12 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
         info: dictionary with information about the integration
     """
     # Sanity checks to reduce risk of having a segfault:
+    jac = _ensure_5args(jac)
     if check_callable:
         _check_callable(rhs, jac, xout[0], y0)
 
     if check_indexing:
         _check_indexing(rhs, jac, xout[0], y0)
 
-    return predefined(rhs, jac, y0, xout, dx0, atol, rtol, **kwargs)
+    return predefined(rhs, jac, np.asarray(y0, dtype=np.float64), np.asarray(xout, dtype=np.float64),
+                      dx0, atol, rtol, **_bs(kwargs))

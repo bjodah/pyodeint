@@ -94,9 +94,10 @@ def test_integrate_predefined(method, use_jac):
     yout, info = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9,
                                       method=method)
     assert info['success']
-    assert info['time_cpu'] > 1e-9
     assert info['nfev'] > 0
     if use_jac:
         assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
+    assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
+    assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer

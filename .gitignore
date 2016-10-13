@@ -5,10 +5,12 @@ build/
 dist/
 cython_debug/
 doc/
-pyodeint/_odeint_numpy.cpp
+pyodeint/_odeint.cpp
 MANIFEST
 .cache/
-pyodeint/_odeint_numpy.pyx
 __conda_version__.txt
 **/.ipynb_checkpoints/
 **.egg-info
+tests/catch.hpp
+tests/test_odeint_anyode
+tests/test_odeint_anyode_parallel

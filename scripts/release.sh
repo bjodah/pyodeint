@@ -8,7 +8,7 @@ if [[ $1 != v* ]]; then
     >&2 echo "Argument does not start with 'v'"
     exit 1
 fi
-./scripts/check_clean_repo_on_master.sh
+./scripts/check_clean_repo_on_master.sh $1
 VERSION=${1#v}
 CONDA_PATH=$2
 SERVER=$3

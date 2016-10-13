@@ -1,3 +1,14 @@
+v0.7.0
+======
+- Changed development status from alpha to beta.
+- Jacobian callback has a new signature (fy=None, never passed by odeint, but by other integrators)
+- Refactored wrappers, added "wall_time" entry in info-dict from integration.
+- Refactored to use AnyODE base class (share code with pycvodes & pygslodeiv2)
+
+v0.6.1
+======
+- Fixes to setup.py and conda recipe
+
 v0.6.0
 ======
 - Changes to info dict: rename 'nrhs' -> 'nfev', 'njac' -> 'njev', added 'cpu_time', 'success'
