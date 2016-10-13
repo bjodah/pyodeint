@@ -14,6 +14,7 @@ struct Decay : public AnyODE::OdeSysBase {
     AnyODE::Status rhs(double t, const double * const __restrict__ y, double * const __restrict__ f) override {
         AnyODE::ignore(t);
         f[0] = -y[0];
+        this->nfev++;
         return AnyODE::Status::success;
     }
 };

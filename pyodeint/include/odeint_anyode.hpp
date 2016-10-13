@@ -301,6 +301,8 @@ namespace odeint_anyode{
 
     template <class OdeSys>
     void set_integration_info(OdeSys * odesys, const Integr<OdeSys>& integrator){
+        odesys->last_integration_info["nfev"] = odesys->nfev;
+        odesys->last_integration_info["njev"] = odesys->njev;
         odesys->last_integration_info_dbl["time_wall"] = integrator.m_time_wall;
         odesys->last_integration_info_dbl["time_cpu"] = integrator.m_time_cpu;
     }
