@@ -3,7 +3,7 @@
 
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
-from odeint_cxx cimport StepType
+from odeint_anyode cimport StepType
 
 cdef extern from "odeint_anyode_parallel.hpp" namespace "odeint_anyode_parallel":
     cdef vector[pair[vector[double], vector[double]]] multi_adaptive[U](
