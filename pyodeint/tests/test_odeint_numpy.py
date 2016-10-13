@@ -35,7 +35,7 @@ def _get_f_j(k):
         fout[1] = k0*y[0] - k1*y[1]
         fout[2] = k1*y[1] - k2*y[2]
 
-    def j(t, y, jmat_out, dfdx_out, fy=None):
+    def j(t, y, jmat_out, dfdx_out):
         jmat_out[0, 0] = -k0
         jmat_out[0, 1] = 0
         jmat_out[0, 2] = 0

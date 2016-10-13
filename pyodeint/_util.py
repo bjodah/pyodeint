@@ -2,6 +2,8 @@
 
 from __future__ import division
 
+import inspect
+
 import numpy as np
 
 
@@ -52,3 +54,28 @@ def _check_indexing(f, j, x0, y0):
         pass
     else:
         raise ValueError("All elements in dfdx_out not assigned in j()")
+
+
+def _ensure_5args(func):
+    """ Conditionally wrap function to ensure 5 input arguments
+
+    Parameters
+    ----------
+    func: callable
+        with four or five positional arguments
+
+    Returns
+    -------
+    callable which possibly ignores 0 or 1 positional arguments
+
+    """
+    if func is None:
+        return None
+
+    self_arg = 1 if inspect.ismethod(func) else 0
+    if len(inspect.getargspec(func)[0]) == 5 + self_arg:
+        return func
+    if len(inspect.getargspec(func)[0]) == 4 + self_arg:
+        return lambda t, y, J, dfdt, fy=None: func(t, y, J, dfdt)
+    else:
+        raise ValueError("Incorrect numer of arguments")

@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import numpy as np
 
 from ._odeint import adaptive, predefined, requires_jac, steppers
-from ._util import _check_callable, _check_indexing
+from ._util import _check_callable, _check_indexing, _ensure_5args
 
 from ._release import __version__
 
@@ -67,6 +67,7 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
         info: dictionary with information about the integration
     """
     # Sanity checks to reduce risk of having a segfault:
+    jac = _ensure_5args(jac)
     if check_callable:
         _check_callable(rhs, jac, x0, y0)
 
@@ -114,6 +115,7 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
         info: dictionary with information about the integration
     """
     # Sanity checks to reduce risk of having a segfault:
+    jac = _ensure_5args(jac)
     if check_callable:
         _check_callable(rhs, jac, xout[0], y0)
 
