@@ -13,3 +13,4 @@ __conda_version__.txt
 **.egg-info
 tests/catch.hpp
 tests/test_odeint_anyode
+tests/test_odeint_anyode_parallel
