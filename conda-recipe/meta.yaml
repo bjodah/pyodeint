@@ -1,9 +1,12 @@
+{% set name = "pyodeint" %}
+{% set version = "0.6.0.git" %}
+
 package:
-  name: pyodeint
-  version: 0.7.0.git
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  path: ../
+  git_url: ../
 
 build:
   number: 0
@@ -15,8 +18,8 @@ requirements:
     - boost ==1.57.0
     - cython
   run:
-    - numpy
     - python
+    - numpy
 
 test:
   imports:
@@ -28,4 +31,11 @@ test:
 
 about:
   home: https://github.com/bjodah/pyodeint
-  license: Simplified BSD license
+  license: BSD 2-Clause
+  license_file: LICENSE
+  summary: 'Python wrapper around odeint (from the boost C++ library)'
+  doc_url: https://bjodah.github.io/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - bjodah
