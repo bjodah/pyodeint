@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyodeint &mdash; pyodeint 0.6.0.git documentation</title>
+  <title>pyodeint &mdash; pyodeint 0.7.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="pyodeint 0.6.0.git documentation" href="../index.html"/>
+    <link rel="top" title="pyodeint 0.7.0 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.6.0.git
+                0.7.0
               </div>
             
           
@@ -118,6 +118,8 @@
       <li class="wy-breadcrumbs-aside">
         
           
+            <a href="https://github.com/bjodah/pyodeint/blob/v0.7.0/doc/_modules/pyodeint.rst" class="fa fa-github"> Edit on GitHub</a>
+          
         
       </li>
   </ul>
@@ -127,17 +129,36 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyodeint</h1><div class="highlight"><pre>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Python binding for odeint from boost.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">._odeint_numpy</span> <span class="kn">import</span> <span class="n">adaptive</span><span class="p">,</span> <span class="n">predefined</span><span class="p">,</span> <span class="n">requires_jac</span><span class="p">,</span> <span class="n">steppers</span>
-<span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">_check_callable</span><span class="p">,</span> <span class="n">_check_indexing</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 
-<span class="kn">from</span> <span class="nn">._release</span> <span class="kn">import</span> <span class="n">__version__</span>
-<span class="k">assert</span> <span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="n">requires_jac</span><span class="p">,</span> <span class="n">steppers</span><span class="p">)</span>  <span class="c"># silence pyflakes</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">._odeint</span> <span class="k">import</span> <span class="n">adaptive</span><span class="p">,</span> <span class="n">predefined</span><span class="p">,</span> <span class="n">requires_jac</span><span class="p">,</span> <span class="n">steppers</span>
+<span class="kn">from</span> <span class="nn">._util</span> <span class="k">import</span> <span class="n">_check_callable</span><span class="p">,</span> <span class="n">_check_indexing</span><span class="p">,</span> <span class="n">_ensure_5args</span>
+
+<span class="kn">from</span> <span class="nn">._release</span> <span class="k">import</span> <span class="n">__version__</span>
+
+
+<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../pyodeint.html#pyodeint.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span><span class="p">,</span> <span class="n">Requirement</span>
+    <span class="k">return</span> <span class="n">resource_filename</span><span class="p">(</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">__name__</span><span class="p">),</span>
+                             <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/include&#39;</span> <span class="o">%</span> <span class="n">__name__</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_bs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># DEPRECATED accept &#39;bs&#39; as short for &#39;bulirsh_stoer&#39;</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;bs&#39;</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bulirsch_stoer&#39;</span>
+    <span class="k">return</span> <span class="n">kwargs</span>
 
 
 <div class="viewcode-block" id="integrate_adaptive"><a class="viewcode-back" href="../pyodeint.html#pyodeint.integrate_adaptive">[docs]</a><span class="k">def</span> <span class="nf">integrate_adaptive</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xend</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span>
-                       <span class="n">check_callable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">check_indexing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                       <span class="n">check_callable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_indexing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrates a system of ordinary differential equations.</span>
 
@@ -176,18 +197,19 @@
 <span class="sd">            values corresponding to xout (axis 0)</span>
 <span class="sd">        info: dictionary with information about the integration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># Sanity checks to reduce risk of having a segfault:</span>
+    <span class="c1"># Sanity checks to reduce risk of having a segfault:</span>
+    <span class="n">jac</span> <span class="o">=</span> <span class="n">_ensure_5args</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">check_callable</span><span class="p">:</span>
         <span class="n">_check_callable</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">check_indexing</span><span class="p">:</span>
         <span class="n">_check_indexing</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">adaptive</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xend</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">adaptive</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xend</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="o">**</span><span class="n">_bs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span></div>
 
-</div>
+
 <div class="viewcode-block" id="integrate_predefined"><a class="viewcode-back" href="../pyodeint.html#pyodeint.integrate_predefined">[docs]</a><span class="k">def</span> <span class="nf">integrate_predefined</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">xout</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span>
-                         <span class="n">check_callable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">check_indexing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                         <span class="n">check_callable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_indexing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrates a system of ordinary differential equations.</span>
 
@@ -223,14 +245,16 @@
 <span class="sd">            values corresponding to xout (axis 0)</span>
 <span class="sd">        info: dictionary with information about the integration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># Sanity checks to reduce risk of having a segfault:</span>
+    <span class="c1"># Sanity checks to reduce risk of having a segfault:</span>
+    <span class="n">jac</span> <span class="o">=</span> <span class="n">_ensure_5args</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">check_callable</span><span class="p">:</span>
         <span class="n">_check_callable</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">xout</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y0</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">check_indexing</span><span class="p">:</span>
         <span class="n">_check_indexing</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">xout</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y0</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">predefined</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">xout</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">predefined</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xout</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                      <span class="n">dx0</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="o">**</span><span class="n">_bs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -242,7 +266,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
+        &copy; Copyright 2016, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
 
     </p>
   </div>
@@ -264,7 +288,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.6.0.git',
+            VERSION:'0.7.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
