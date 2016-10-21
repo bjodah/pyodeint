@@ -34,7 +34,7 @@ about:
   license: BSD 2-Clause
   license_file: LICENSE
   summary: 'Python wrapper around odeint (from the boost C++ library)'
-  doc_url: https://bjodah.github.io/{{ name }}
+  doc_url: https://bjodah.github.io/{{ name }}/latest
 
 extra:
   recipe-maintainers:
