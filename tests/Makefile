@@ -23,7 +23,7 @@ clean:
 test_%: test_%.cpp ../include/odeint_anyode.hpp catch.hpp testing_utils.hpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(DEFINES) -o $@ $< $(LIBS)
 
-test_odeint_anyode_parallel: test_odeint_anyode_parallel.cpp ../include/odeint_*.hpp
+test_odeint_anyode_parallel: test_odeint_anyode_parallel.cpp catch.hpp ../include/odeint_*.hpp
 	$(CXX) $(CXXFLAGS) $(OPENMP_FLAG) $(INCLUDE) $(DEFINES) -o $@ $< $(LIBS) $(OPENMP_LIB)
 
 catch.hpp: catch.hpp.bz2

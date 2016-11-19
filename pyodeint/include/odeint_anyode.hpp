@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <chrono>
+#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -89,9 +90,6 @@ namespace odeint_anyode{
             return false;
     }
 
-
-
-
     vector_type vec_from_ptr(const value_type * const arr, std::size_t len){
         vector_type vec(len);
         for (std::size_t i=0; i<len; ++i)
@@ -110,12 +108,16 @@ namespace odeint_anyode{
         value_type m_dx0, m_atol, m_rtol;
         StepType m_styp;
         long int m_mxsteps;
+        int m_autorestart;
+        bool m_return_on_error;
 
         void rhs(const vector_type &yarr, vector_type &dydx, value_type xval);
         void jac(const vector_type & yarr, matrix_type &Jmat,
                  const value_type & xval, vector_type &dfdx);
-        Integr(OdeSys * odesys, value_type dx0, value_type atol, value_type rtol, StepType styp, long int mxsteps) :
-            m_odesys(odesys), m_dx0(dx0), m_atol(atol), m_rtol(rtol), m_styp(styp), m_mxsteps(mxsteps) {}
+        Integr(OdeSys * odesys, value_type dx0, value_type atol, value_type rtol, StepType styp,
+               long int mxsteps, int autorestart=0, bool return_on_error=false) :
+            m_odesys(odesys), m_dx0(dx0), m_atol(atol), m_rtol(rtol), m_styp(styp),
+            m_mxsteps(mxsteps), m_autorestart(autorestart), m_return_on_error(return_on_error) {}
 
         std::pair<std::vector<value_type>, std::vector<value_type> >
         adaptive(const value_type x0,
@@ -187,7 +189,8 @@ namespace odeint_anyode{
         std::pair<std::vector<value_type>, std::vector<value_type> >
         adaptive_bulirsch_stoer(const value_type x0,
                                 const value_type xend,
-                                const value_type * const __restrict__ y0){
+                                const value_type * const __restrict__ y0
+                                ){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -195,7 +198,28 @@ namespace odeint_anyode{
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
-            integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0, std::bind(&Integr::obs_adaptive, this, _1, _2));
+            try{
+                integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0, std::bind(&Integr::obs_adaptive, this, _1, _2));
+            } catch (const std::exception& e) {
+                if (m_autorestart > 0){
+                    std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
+                              << ") x=" << this->m_xout.back() << "\n";
+                    auto c_nsteps = this->m_nsteps;
+                    auto c_xout = this->m_xout;
+                    auto c_yout = this->m_yout;
+                    m_autorestart--;
+                    adaptive_bulirsch_stoer(c_xout.back(), xend, &c_yout[c_yout.size() - ny]);
+                    c_xout.insert(c_xout.end(), m_xout.begin(), m_xout.end());
+                    c_yout.insert(c_yout.end(), m_yout.begin(), m_yout.end());
+                    m_xout = c_xout;
+                    m_yout = c_yout;
+                    m_nsteps += c_nsteps;
+                } else {
+                    if (!m_return_on_error)
+                        throw e;
+                }
+                std::cerr << e.what() << std::endl;
+            }
             return std::make_pair(this->m_xout, this->m_yout);
         }
 
@@ -317,7 +341,9 @@ namespace odeint_anyode{
                     const double x0,
                     const double xend,
                     long int mxsteps=0,
-                    double dx0=0.0
+                    double dx0=0.0,
+                    int autorestart=0,
+                    bool return_on_error=false
                     )
                     //,
                     // const double dx_min=0.0,
@@ -332,7 +358,7 @@ namespace odeint_anyode{
         }
         if (mxsteps == 0)
             mxsteps = 500;
-        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
+        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps, autorestart, return_on_error);
         auto result = integr.adaptive(x0, xend, y0);
         odesys->last_integration_info.clear();
         odesys->last_integration_info_dbl.clear();
