@@ -11,9 +11,10 @@ OPENMP_LIB ?= -lgomp
 
 .PHONY: test clean
 
-test: test_odeint_anyode test_odeint_anyode_parallel
+test: test_odeint_anyode test_odeint_anyode_parallel test_odeint_anyode_autorestart
 	./test_odeint_anyode --abortx 1
 	./test_odeint_anyode_parallel --abortx 1
+	./test_odeint_anyode_autorestart --abortx 1
 	python3 ./_test_odeint_anyode.py
 
 clean:
