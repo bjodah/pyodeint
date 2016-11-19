@@ -34,7 +34,9 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         const double,
         const double,
         long int,
-        const double
+        const double,
+        int,
+        bool,
     ) except +
 
     cdef StepType styp_from_name(string) nogil except +

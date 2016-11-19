@@ -195,18 +195,18 @@ namespace odeint_anyode{
         }
 
         void obs_adaptive(const vector_type &yarr, value_type xval){
-            if (this->m_nsteps == this->m_mxsteps)
-                throw std::runtime_error(StreamFmt() << "Maximum number of steps reached: " << this->m_nsteps);
             this->m_xout.push_back(xval);
             for(int i=0 ; i < this->m_odesys->get_ny() ; ++i)
                 this->m_yout.push_back(yarr[i]);
+            if (this->m_nsteps == this->m_mxsteps)
+                throw std::runtime_error(StreamFmt() << "Maximum number of steps reached: " << this->m_nsteps);
             this->m_nsteps++;
         }
 
         void obs_predefined(const vector_type & /* yarr */, value_type /* xval */){
+            (this->m_nsteps)++;
             if (this->m_nsteps == this->m_mxsteps)
                 throw std::runtime_error(StreamFmt() << "Maximum number of steps reached: " << this->m_nsteps);
-            (this->m_nsteps)++;
         }
 
         void

@@ -101,3 +101,45 @@ def test_integrate_predefined(method, use_jac):
     assert np.allclose(yout, yref)
     assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
     assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer
+
+
+def test_adaptive_return_on_error():
+    k = k0, k1, k2 = 2.0, 3.0, 4.0
+    y0 = [0.7, 0.3, 0.5]
+    atol, rtol = 1e-8, 1e-8
+    kwargs = dict(x0=0, xend=3, dx0=1e-10, atol=atol, rtol=rtol,
+                  method='rosenbrock4')
+    f, j = _get_f_j(k)
+    xout, yout, info = integrate_adaptive(f, j, y0, nsteps=7, return_on_error=True, **kwargs)
+    yref = decay_get_Cref(k, y0, xout)
+    assert np.allclose(yout, yref,
+                       rtol=10*rtol,
+                       atol=10*atol)
+    assert xout.size == 8
+    assert xout[-1] > 1e-6
+    assert yout.shape[0] == xout.size
+    assert info['nfev'] > 0
+    assert info['njev'] > 0
+    assert info['success'] is False
+    assert xout[-1] < kwargs['xend']  # obviously not strict
+
+
+def test_adaptive_autorestart():
+    k = k0, k1, k2 = 2.0, 3.0, 4.0
+    y0 = [0.7, 0.3, 0.5]
+    atol, rtol = 1e-8, 1e-8
+    kwargs = dict(x0=0, xend=3, dx0=1e-10, atol=atol, rtol=rtol,
+                  method='rosenbrock4', nsteps=23, return_on_error=True,
+                  autorestart=7+1)
+    f, j = _get_f_j(k)
+    xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
+    yref = decay_get_Cref(k, y0, xout)
+    assert np.allclose(yout, yref,
+                       rtol=10*rtol,
+                       atol=10*atol)
+    assert xout[-1] > 1e-6
+    assert yout.shape[0] == xout.size
+    assert info['nfev'] > 0
+    assert info['njev'] > 0
+    assert info['success']
+    assert xout[-1] == kwargs['xend']
