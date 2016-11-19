@@ -135,17 +135,17 @@ namespace odeint_anyode{
                 } else if ( m_styp == StepType::rosenbrock4 ) {
                     this->adaptive_rosenbrock4(x0, xend, y0);
                 } else {
-                    goto impossible;
+                    goto impossible_adaptive;
                 }
             } catch (const std::exception& e) {
                 if (m_autorestart > 0){
                     std::cerr << e.what() << std::endl;
                     std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
                               << ") x=" << this->m_xout.back() << "\n";
+                    m_autorestart--;
                     auto c_nsteps = this->m_nsteps;
                     auto c_xout = this->m_xout;
                     auto c_yout = this->m_yout;
-                    m_autorestart--;
                     adaptive(c_xout.back(), xend, &c_yout[c_yout.size() - m_odesys->get_ny()]);
                     c_xout.insert(c_xout.end(), m_xout.begin(), m_xout.end());
                     c_yout.insert(c_yout.end(), m_yout.begin(), m_yout.end());
@@ -161,29 +161,50 @@ namespace odeint_anyode{
             this->m_time_wall = std::chrono::duration<double>(
                 std::chrono::high_resolution_clock::now() - t_start).count();
             return std::make_pair(this->m_xout, this->m_yout);
-        impossible:
+        impossible_adaptive:
             throw std::runtime_error("Impossible: unknown StepType!");
         }
 
-        void predefined(const std::size_t nx,
-                        const value_type * const __restrict__ xout,
-                        const value_type * const __restrict__ y0,
-                        value_type * const __restrict__ yout){
+        int predefined(const int nx,
+                       const value_type * const __restrict__ xout,
+                       const value_type * const __restrict__ y0,
+                       value_type * const __restrict__ yout){
+            int nreached;
             std::time_t cputime0 = std::clock();
             auto t_start = std::chrono::high_resolution_clock::now();
             std::copy(y0, y0 + (this->m_odesys->get_ny()), yout);
-            if ( m_styp == StepType::bulirsch_stoer ) {
-                this->predefined_bulirsch_stoer(nx, xout, y0, yout);
-            } else if ( m_styp == StepType::dopri5 ) {
-                this->predefined_dopri5(nx, xout, y0, yout);
-            } else if ( m_styp == StepType::rosenbrock4 ) {
-                this->predefined_rosenbrock4(nx, xout, y0, yout);
-            } else {
-                throw std::runtime_error("Impossible: unknown StepType!");
+            try {
+                if ( m_styp == StepType::bulirsch_stoer ) {
+                    this->predefined_bulirsch_stoer(nx, xout, y0, yout, &nreached);
+                } else if ( m_styp == StepType::dopri5 ) {
+                    this->predefined_dopri5(nx, xout, y0, yout, &nreached);
+                } else if ( m_styp == StepType::rosenbrock4 ) {
+                    this->predefined_rosenbrock4(nx, xout, y0, yout, &nreached);
+                } else {
+                    goto impossible_predefined;
+                }
+            } catch (const std::exception& e) {
+                if (m_autorestart > 0){
+                    std::cerr << e.what() << std::endl;
+                    std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
+                              << ") x=" << this->m_xout.back() << "\n";
+                    m_autorestart--;
+                    auto c_nsteps = this->m_nsteps;
+                    nreached += predefined(nx - nreached, xout + nreached,
+                                           yout + nreached*m_odesys->get_ny(),
+                                           yout + nreached*m_odesys->get_ny());
+                    this->m_nsteps += c_nsteps;
+                } else {
+                    if (!m_return_on_error)
+                        throw;
+                }
             }
             this->m_time_cpu = (std::clock() - cputime0) / (double)CLOCKS_PER_SEC;
             this->m_time_wall = std::chrono::duration<double>(
                 std::chrono::high_resolution_clock::now() - t_start).count();
+            return nreached;
+        impossible_predefined:
+            throw std::runtime_error("Impossible: unknown StepType!");
         }
     private:
         std::vector<value_type> m_xout, m_yout;
@@ -200,20 +221,19 @@ namespace odeint_anyode{
                 this->m_yout.push_back(yarr[i]);
             if (this->m_nsteps == this->m_mxsteps)
                 throw std::runtime_error(StreamFmt() << "Maximum number of steps reached: " << this->m_nsteps);
-            this->m_nsteps++;
+            m_nsteps++;
         }
 
         void obs_predefined(const vector_type & /* yarr */, value_type /* xval */){
-            (this->m_nsteps)++;
             if (this->m_nsteps == this->m_mxsteps)
                 throw std::runtime_error(StreamFmt() << "Maximum number of steps reached: " << this->m_nsteps);
+            m_nsteps++;
         }
 
-        void
-        adaptive_bulirsch_stoer(const value_type x0,
-                                const value_type xend,
-                                const value_type * const __restrict__ y0
-                                ){
+        void adaptive_bulirsch_stoer(const value_type x0,
+                                     const value_type xend,
+                                     const value_type * const __restrict__ y0
+                                     ){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -221,32 +241,44 @@ namespace odeint_anyode{
             auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
-            integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0, std::bind(&Integr::obs_adaptive, this, _1, _2));
+            integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0,
+                               std::bind(&Integr::obs_adaptive, this, _1, _2));
         }
 
-        void predefined_bulirsch_stoer(const std::size_t nx,
+        void predefined_bulirsch_stoer(const int nx,
                                        const value_type * const __restrict__ xout,
                                        const value_type * const __restrict__ y0,
-                                       value_type * const __restrict__ yout){
+                                       value_type * const __restrict__ yout,
+                                       int * nreached){
+            *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
             vector_type y_ = vec_from_ptr(y0, ny);
             vector_type xout_ = vec_from_ptr(xout, nx);
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
-            auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
-            for (size_t ix=1; ix < nx; ++ix){
-                this->reset();
-                integrate_adaptive(stepper, f, y_, xout[ix-1], xout[ix], this->m_dx0, std::bind(&Integr::obs_predefined, this, _1, _2));
-                for (int iy=0; iy < ny; ++iy)
-                    yout[ix*ny + iy] = y_[iy];
+            try{
+                auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
+                for (*nreached=1; *nreached < nx; ++*nreached){
+                    const int ix = *nreached;
+                    this->reset();
+                    integrate_adaptive(stepper, f, y_, xout[ix-1], xout[ix], this->m_dx0,
+                                       std::bind(&Integr::obs_predefined, this, _1, _2));
+                    for (int iy=0; iy < ny; ++iy)
+                        yout[ix*ny + iy] = y_[iy];
+                }
+            } catch (const std::exception& e) {
+                std::cerr << __FILE__ << ":" << __LINE__ << ":";
+                std::cerr << e.what() << std::endl;
+                nreached--;
+                if (!m_return_on_error)
+                    throw;
             }
         }
 
-        void
-        adaptive_dopri5(const value_type x0,
-                        const value_type xend,
-                        const value_type * const __restrict__ y0){
+        void adaptive_dopri5(const value_type x0,
+                             const value_type xend,
+                             const value_type * const __restrict__ y0){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -255,32 +287,44 @@ namespace odeint_anyode{
             auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(this->m_atol, this->m_rtol);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
-            integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0, std::bind(&Integr::obs_adaptive, this, _1, _2));
+            integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0,
+                               std::bind(&Integr::obs_adaptive, this, _1, _2));
         }
 
-        void predefined_dopri5(const std::size_t nx,
+        void predefined_dopri5(const int nx,
                                const value_type * const __restrict__ xout,
                                const value_type * const __restrict__ y0,
-                               value_type * const __restrict__ yout){
+                              value_type * const __restrict__ yout,
+                              int * nreached){
+            *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
             vector_type y_ = vec_from_ptr(y0, ny);
             vector_type xout_ = vec_from_ptr(xout, nx);
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
-            auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(this->m_atol, this->m_rtol);
-            for (size_t ix=1; ix < nx; ++ix){
-                this->reset();
-                integrate_adaptive(stepper, f, y_, xout[ix - 1], xout[ix], this->m_dx0, std::bind(&Integr::obs_predefined, this, _1, _2));
-                for (int iy=0; iy < ny; ++iy)
-                    yout[ix*ny + iy] = y_[iy];
+            try {
+                auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(this->m_atol, this->m_rtol);
+                for (*nreached=1; *nreached < nx; ++*nreached){
+                    const int ix = *nreached;
+                    this->reset();
+                    integrate_adaptive(stepper, f, y_, xout[ix - 1], xout[ix], this->m_dx0,
+                                       std::bind(&Integr::obs_predefined, this, _1, _2));
+                    for (int iy=0; iy < ny; ++iy)
+                        yout[ix*ny + iy] = y_[iy];
+                }
+            } catch (const std::exception& e) {
+                std::cerr << __FILE__ << ":" << __LINE__ << ":";
+                std::cerr << e.what() << std::endl;
+                nreached--;
+                if (!m_return_on_error)
+                    throw;
             }
         }
 
-        void
-        adaptive_rosenbrock4(const value_type x0,
-                             const value_type xend,
-                             const value_type * const __restrict__ y0){
+        void adaptive_rosenbrock4(const value_type x0,
+                                  const value_type xend,
+                                  const value_type * const __restrict__ y0){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -296,10 +340,12 @@ namespace odeint_anyode{
                                               std::bind(&Integr::obs_adaptive, this, _1, _2));
         }
 
-        void predefined_rosenbrock4(const std::size_t nx,
+        void predefined_rosenbrock4(const int nx,
                                     const value_type * const __restrict__ xout,
                                     const value_type * const __restrict__ y0,
-                                    value_type * const __restrict__ yout){
+                                    value_type * const __restrict__ yout,
+                                    int * nreached){
+            *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
             vector_type y_ = vec_from_ptr(y0, ny);
             vector_type xout_ = vec_from_ptr(xout, nx);
@@ -310,13 +356,22 @@ namespace odeint_anyode{
                                      const value_type & xval, vector_type &dfdx) {
                 this->m_odesys->dense_jac_rmaj(xval, &(yarr.data()[0]), nullptr, &(Jmat.data()[0]), ny, &(dfdx.data()[0]));
             };
-            auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol);
-            for (size_t ix=1; ix < nx; ++ix){
-                this->reset();
-                integrate_adaptive(stepper, std::make_pair(f, j), y_, xout[ix - 1], xout[ix], this->m_dx0,
-                                   std::bind(&Integr::obs_predefined, this, _1, _2));
-                for (int iy=0; iy < ny; ++iy)
-                    yout[ix*ny + iy] = y_[iy];
+            try {
+                auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol);
+                for (*nreached=1; *nreached < nx; ++*nreached){
+                    const int ix = *nreached;
+                    this->reset();
+                    integrate_adaptive(stepper, std::make_pair(f, j), y_, xout[ix - 1], xout[ix], this->m_dx0,
+                                       std::bind(&Integr::obs_predefined, this, _1, _2));
+                    for (int iy=0; iy < ny; ++iy)
+                        yout[ix*ny + iy] = y_[iy];
+                }
+            } catch (const std::exception& e) {
+                std::cerr << __FILE__ << ":" << __LINE__ << ":";
+                std::cerr << e.what() << std::endl;
+                nreached--;
+                if (!m_return_on_error)
+                    throw;
             }
         }
 
@@ -367,19 +422,21 @@ namespace odeint_anyode{
     }
 
     template <class OdeSys>
-    void simple_predefined(OdeSys * const odesys,
-                           const double atol,
-                           const double rtol,
-                           const StepType styp,
-                           const double * const y0,
-                           const std::size_t nout,
-                           const double * const xout,
-                           double * const yout,
-                           long int mxsteps=0,
-                           double dx0=0.0
-                           )
-                           // const double dx_min=0.0,
-                           // const double dx_max=0.0,
+    int simple_predefined(OdeSys * const odesys,
+                          const double atol,
+                          const double rtol,
+                          const StepType styp,
+                          const double * const y0,
+                          const int nout,
+                          const double * const xout,
+                          double * const yout,
+                          long int mxsteps=0,
+                          double dx0=0.0,
+                          int autorestart=0,
+                          bool return_on_error=false
+                          )
+    // const double dx_min=0.0,
+    // const double dx_max=0.0,
     {
         if (dx0 == 0.0){
             if (xout[0] == 0)
@@ -389,11 +446,12 @@ namespace odeint_anyode{
         }
         if (mxsteps == 0)
             mxsteps = 500;
-        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps);
-        integr.predefined(nout, xout, y0, yout);
+        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps, autorestart, return_on_error);
+        int nreached = integr.predefined(nout, xout, y0, yout);
         odesys->last_integration_info.clear();
         odesys->last_integration_info_dbl.clear();
         set_integration_info(odesys, integr);
+        return nreached;
     }
 
 }

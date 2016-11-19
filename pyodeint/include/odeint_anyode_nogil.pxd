@@ -12,17 +12,19 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
     cdef cppclass Integr[U]:
         double m_time_cpu, m_time_wall
 
-    cdef void simple_predefined[U](
+    cdef int simple_predefined[U](
         U * const,
         const double,
         const double,
         const StepType,
         const double * const,
-        const size_t,
+        const int,
         const double * const,
         double * const,
         long int,
-        const double
+        const double,
+        int,
+        bool
     ) nogil except +
 
     cdef pair[vector[double], vector[double]] simple_adaptive[U](
@@ -34,7 +36,9 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         const double,
         const double,
         long int,
-        const double
+        const double,
+        int,
+        bool,
     ) nogil except +
 
     cdef StepType styp_from_name(string) nogil except +

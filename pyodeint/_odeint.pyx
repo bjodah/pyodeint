@@ -50,10 +50,11 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
 def predefined(rhs, jac,
                cnp.ndarray[cnp.float64_t] y0,
                cnp.ndarray[cnp.float64_t, ndim=1] xout,
-               double dx0, double atol,
-               double rtol, method='rosenbrock4', int nsteps=500):
+               double dx0, double atol, double rtol, method='rosenbrock4',
+               int nsteps=500, int autorestart=0, bool return_on_error=False):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
+        int nreached
         cnp.ndarray[cnp.float64_t, ndim=2] yout
         PyOdeSys * odesys
     if method in requires_jac and jac is None:
@@ -63,8 +64,11 @@ def predefined(rhs, jac,
     odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0)
     try:
         yout = np.empty((xout.size, ny))
-        simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-                                    &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0)
-        return yout, get_last_info(odesys)
+        nreached = simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
+                                               &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0,
+                                               autorestart, return_on_error)
+        info = get_last_info(odesys, success=False if return_on_error and nreached < xout.size else True)
+        info['nreached'] = nreached
+        return yout, info
     finally:
         del odesys

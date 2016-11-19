@@ -12,7 +12,7 @@ pip install dist/*.tar.gz
 (cd /; python2.7 -m pytest --pyargs $PKG_NAME)
 pip3 install dist/*.tar.gz
 (cd /; python3 -m pytest --pyargs $PKG_NAME)
-PYTHONPATH=$(pwd) ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
+PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 # Make sure repo is pip installable from git-archive zip
