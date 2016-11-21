@@ -8,9 +8,9 @@ fi
 (cd tests/; make)
 
 python2 setup.py sdist
-python2 -m pip install dist/*.tar.gz
+python2 -m pip install --ignore-installed dist/*.tar.gz
 (cd /; python2 -m pytest --pyargs $PKG_NAME)
-python3 -m pip install dist/*.tar.gz
+python3 -m pip install --ignore-installed dist/*.tar.gz
 (cd /; python3 -m pytest --pyargs $PKG_NAME)
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
