@@ -89,9 +89,9 @@ def test_integrate_predefined(method, use_jac):
     xout = np.linspace(0, 3)
     dx0 = 1e-10
     # Run twice to catch possible side-effects:
-    yout, info = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9,
+    yout, info = integrate_predefined(f, j, y0, xout, 1e-9, 1e-9, dx0,
                                       method=method)
-    yout, info = integrate_predefined(f, j, y0, xout, dx0, 1e-9, 1e-9,
+    yout, info = integrate_predefined(f, j, y0, xout, 1e-9, 1e-9, dx0,
                                       method=method)
     assert info['success']
     assert info['nfev'] > 0

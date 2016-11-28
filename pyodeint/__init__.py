@@ -26,7 +26,7 @@ def _bs(kwargs):
     return kwargs
 
 
-def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
+def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0,
                        check_callable=False, check_indexing=False, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -44,12 +44,12 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
         initial value of the independent variable
     xend: float
         stopping value for the independent variable
-    dx0: float
-        initial step-size
     atol: float
         absolute tolerance
     rtol: float
         relative tolerance
+    dx0: float
+        initial step-size
     check_callable: bool (default: False)
         perform signature sanity checks on ``rhs`` and ``jac``
     check_indexing: bool (default: False)
@@ -74,10 +74,10 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, dx0, atol, rtol,
     if check_indexing:
         _check_indexing(rhs, jac, x0, y0)
 
-    return adaptive(rhs, jac, np.asarray(y0, dtype=np.float64), x0, xend, dx0, atol, rtol, **_bs(kwargs))
+    return adaptive(rhs, jac, np.asarray(y0, dtype=np.float64), x0, xend, atol, rtol, dx0, **_bs(kwargs))
 
 
-def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
+def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0,
                          check_callable=False, check_indexing=False, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -93,12 +93,12 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
         initial values of the dependent variables
     xout: array_like
         values of the independent variable
-    dx0: float
-        initial step-size
     atol: float
         absolute tolerance
     rtol: float
         relative tolerance
+    dx0: float
+        initial step-size
     check_callable: bool (default: False)
         perform signature sanity checks on ``rhs`` and ``jac``
     check_indexing: bool (default: False)
@@ -123,4 +123,4 @@ def integrate_predefined(rhs, jac, y0, xout, dx0, atol, rtol,
         _check_indexing(rhs, jac, xout[0], y0)
 
     return predefined(rhs, jac, np.asarray(y0, dtype=np.float64), np.asarray(xout, dtype=np.float64),
-                      dx0, atol, rtol, **_bs(kwargs))
+                      atol, rtol, dx0, **_bs(kwargs))

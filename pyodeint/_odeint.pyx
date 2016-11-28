@@ -26,8 +26,8 @@ cdef dict get_last_info(PyOdeSys * odesys, success=True):
 
 
 def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
-             double dx0, double atol, double rtol, str method='rosenbrock4', int nsteps=500,
-             int autorestart=0, bool return_on_error=False):
+             double atol, double rtol, double dx0=.0, str method='rosenbrock4', int nsteps=500,
+             int autorestart=0, bool return_on_error=False, dx0cb=None):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
         PyOdeSys * odesys
@@ -36,7 +36,7 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
 
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0, <PyObject *> dx0cb)
     try:
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
@@ -50,8 +50,8 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
 def predefined(rhs, jac,
                cnp.ndarray[cnp.float64_t] y0,
                cnp.ndarray[cnp.float64_t, ndim=1] xout,
-               double dx0, double atol, double rtol, method='rosenbrock4',
-               int nsteps=500, int autorestart=0, bool return_on_error=False):
+               double atol, double rtol, double dx0=.0, method='rosenbrock4',
+               int nsteps=500, int autorestart=0, bool return_on_error=False, dx0cb=None):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
         int nreached
@@ -61,7 +61,7 @@ def predefined(rhs, jac,
         raise ValueError("Method requires explicit jacobian callback")
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, -1, -1, 0, <PyObject *> dx0cb)
     try:
         yout = np.empty((xout.size, ny))
         nreached = simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
