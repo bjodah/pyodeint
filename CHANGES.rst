@@ -1,3 +1,9 @@
+v0.8.0
+======
+- autorestart
+- return_on_error
+- dx0cb
+
 v0.7.0
 ======
 - Changed development status from alpha to beta.

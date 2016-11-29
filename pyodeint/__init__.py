@@ -5,6 +5,8 @@ Python binding for odeint from boost.
 
 from __future__ import absolute_import
 
+import warnings
+
 import numpy as np
 
 from ._odeint import adaptive, predefined, requires_jac, steppers
@@ -22,6 +24,7 @@ def get_include():
 def _bs(kwargs):
     # DEPRECATED accept 'bs' as short for 'bulirsh_stoer'
     if kwargs.get('method', '-') == 'bs':
+        warnings.warn('Using method="bs" is depreacted, use "bulirsh_stoer" instead.', DeprecationWarning)
         kwargs['method'] = 'bulirsch_stoer'
     return kwargs
 
@@ -55,8 +58,16 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0,
     check_indexing: bool (default: False)
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
-         'method': str
+        'method': str
             'rosenbrock4', 'dopri5' or 'bs'
+        'return_on_error': bool
+            Returns on error without raising an excpetion (with ``'success'==False``).
+        'autorestart': int
+            Useful for autonomous systems where conditions change during integration.
+            Will restart the integration with ``x==0``.
+        'dx0cb': callable
+            Callback for calculating dx0 (make sure to pass ``dx0==0.0``) to enable.
+            Signature: ``f(x, y[:]) -> float``.
 
     Returns
     -------
@@ -104,8 +115,16 @@ def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0,
     check_indexing: bool (default: False)
         perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
-         'method': str
-            'rosenbrock4', 'dopri5' or 'bs'
+        'method': str
+            One in ``('rosenbrock4', 'dopri5', 'bs')``.
+        'return_on_error': bool
+            Returns on error without raising an excpetion (with ``'success'==False``).
+        'autorestart': int
+            Useful for autonomous systems where conditions change during integration.
+            Will restart the integration with ``x==0``.
+        'dx0cb': callable
+            Callback for calculating dx0 (make sure to pass ``dx0==0.0``) to enable.
+            Signature: ``f(x, y[:]) -> float``.
 
     Returns
     -------
