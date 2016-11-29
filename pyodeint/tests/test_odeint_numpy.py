@@ -188,7 +188,7 @@ def test_predefined_return_on_error():
     assert info['success'] is False
 
 
-def test_dx0cb():
+def test_dx0cb():  # this test works for GSL and CVode, but it is a weak test for odeint
     k = 1e23, 3.0, 4.0
     y0 = [.7, .0, .0]
     x0, xend = 0, 5
