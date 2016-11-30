@@ -21,7 +21,9 @@ namespace odeint_anyode_parallel {
                    const double * t0,  // vectorized
                    const double * tend,  // vectorized
                    const long int mxsteps,
-                   const double * dx0  // vectorized
+                   const double * dx0,  // vectorized
+                   int autorestart=0,
+                   bool return_on_error=false
                    ){
         const int ny = odesys[0]->get_ny();
         const int nsys = odesys.size();
@@ -34,7 +36,7 @@ namespace odeint_anyode_parallel {
             te.run([&]{
                 local_result = simple_adaptive<OdeSys>(
                     odesys[idx], atol, rtol, styp, y0 + idx*ny, t0[idx], tend[idx],
-                    mxsteps, dx0[idx]);
+                    mxsteps, dx0[idx], autorestart, return_on_error);
             });
             results[idx] = local_result;
         }
@@ -54,7 +56,9 @@ namespace odeint_anyode_parallel {
                      const double * const tout, // vectorized
                      double * const yout,  // vectorized
                      const long int mxsteps,
-                     const double * dx0  // vectorized
+                     const double * dx0,  // vectorized
+                     int autorestart=0,
+                     bool return_on_error=false
                      ){
         const int ny = odesys[0]->get_ny();
         const int nsys = odesys.size();
@@ -65,7 +69,7 @@ namespace odeint_anyode_parallel {
             te.run([&]{
                 simple_predefined<OdeSys>(odesys[idx], atol, rtol, styp, y0 + idx*ny,
                                           nout, tout + idx*nout, yout + idx*ny*nout,
-                                          mxsteps, dx0[idx]);
+                                          mxsteps, dx0[idx], autorestart, return_on_error);
             });
         }
         te.rethrow();
