@@ -8,16 +8,14 @@ fi
 (cd tests/; make)
 
 python2 setup.py sdist
-pip install dist/*.tar.gz
-(cd /; python2.7 -m pytest --pyargs $PKG_NAME)
-pip3 install dist/*.tar.gz
+python2 -m pip install --ignore-installed dist/*.tar.gz
+(cd /; python2 -m pytest --pyargs $PKG_NAME)
+python3 -m pip install --ignore-installed dist/*.tar.gz
 (cd /; python3 -m pytest --pyargs $PKG_NAME)
-PYTHONPATH=$(pwd) ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
+PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 # Make sure repo is pip installable from git-archive zip
 git archive -o /tmp/$PKG_NAME.zip HEAD
 python3 -m pip install --force-reinstall /tmp/$PKG_NAME.zip
 (cd /; python3 -c "from ${PKG_NAME} import get_include as gi; import os; assert 'odeint_anyode_nogil.pxd' in os.listdir(gi())")
-
-! grep "DO-NOT-MERGE!" -R . --exclude ci.sh
