@@ -39,9 +39,11 @@ twine upload dist/${PKG}-$VERSION.tar.gz
 
 set +x
 echo ""
-echo "    You may now create a new github release with the tag \"v$VERSION\" and name "
-echo "    it \"${PKG}-${VERSION}\", (don't foreget to manually attach the new .tar.gz"
-echo "    file from the ./dist/ directory). Then run:"
+echo "    You may now create a new github release at with the tag \"v$VERSION\", here is a link:"
+echo "        https://github.com/$4/${5:-$PKG}/releases/new "
+echo "    name the release \"${PKG}-${VERSION}\", and don't foreget to manually attach the file:"
+echo "        $(openssl sha256 $(pwd)/dist/${PKG}-${VERSION}.tar.gz)"
+echo "    Then run:"
 echo ""
-echo "        $ ./scripts/post_release.sh $1 MYSERVER MYGITHUBUSERNAME"
+echo "        $ ./scripts/post_release.sh $1 $SERVER $4"
 echo ""
