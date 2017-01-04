@@ -22,7 +22,8 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         const double * const,
         double * const,
         long int,
-        const double,
+        double,
+        double,
         int,
         bool
     ) except +
@@ -36,7 +37,8 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         const double,
         const double,
         long int,
-        const double,
+        double,
+        double,
         int,
         bool,
     ) except +

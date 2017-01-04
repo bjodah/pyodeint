@@ -24,8 +24,9 @@ cdef class PyDecay:
     def adaptive(self, double y0, double t, long int mxsteps=0,
                  str stepper_name='bulirsch_stoer'):
         cdef double dt0 = 1e-14
+        cdef double dtmax = 0.0
         cdef double t0 = 0.0
         return simple_adaptive[Decay](
             self.thisptr, 1e-10, 1e-10,
             styp_from_name(stepper_name.lower().encode('UTF-8')),
-            &y0, t0, t, mxsteps, dt0)
+            &y0, t0, t, mxsteps, dt0, dtmax)

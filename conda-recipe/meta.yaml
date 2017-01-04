@@ -15,7 +15,7 @@ requirements:
   build:
     - python
     - numpy
-    - boost ==1.57.0
+    - boost
     - cython
   run:
     - python
