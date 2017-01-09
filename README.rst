@@ -54,7 +54,7 @@ Source distribution is available here:
 
 here is an example of how to build from source::
 
-   $ CPLUS_INCLUDE_PATH=~/Downloads/boost_1_59_0 python3 setup.py build_ext -i
+   $ CPLUS_INCLUDE_PATH=~/Downloads/boost_1_63_0 python3 setup.py build_ext -i
 
 
 Examples
