@@ -1,5 +1,5 @@
-Unreleased
-==========
+v0.8.1
+======
 - support for dx_max.
 
 v0.8.0
