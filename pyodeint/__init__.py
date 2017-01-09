@@ -29,7 +29,7 @@ def _bs(kwargs):
     return kwargs
 
 
-def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0,
+def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0, dx_max=.0,
                        check_callable=False, check_indexing=False, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -42,21 +42,23 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0,
         Function with signature j(t, y, jmat_out, dfdx_out) which modifies
         jmat_out and dfdx_out *inplace*.
     y0: array_like
-        initial values of the dependent variables
+        Initial values of the dependent variables.
     x0: float
-        initial value of the independent variable
+        Initial value of the independent variable.
     xend: float
-        stopping value for the independent variable
+        Stopping value for the independent variable.
     atol: float
-        absolute tolerance
+        Absolute tolerance.
     rtol: float
-        relative tolerance
+        Relative tolerance.
     dx0: float
-        initial step-size
+        Initial step-size.
+    dx_max: float
+        Maximum step-size.
     check_callable: bool (default: False)
-        perform signature sanity checks on ``rhs`` and ``jac``
+        Perform signature sanity checks on ``rhs`` and ``jac``.
     check_indexing: bool (default: False)
-        perform item setting sanity checks on ``rhs`` and ``jac``.
+        Perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
         'method': str
             'rosenbrock4', 'dopri5' or 'bs'
@@ -85,10 +87,10 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0,
     if check_indexing:
         _check_indexing(rhs, jac, x0, y0)
 
-    return adaptive(rhs, jac, np.asarray(y0, dtype=np.float64), x0, xend, atol, rtol, dx0, **_bs(kwargs))
+    return adaptive(rhs, jac, np.asarray(y0, dtype=np.float64), x0, xend, atol, rtol, dx0, dx_max, **_bs(kwargs))
 
 
-def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0,
+def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0=0.0, dx_max=0.0,
                          check_callable=False, check_indexing=False, **kwargs):
     """
     Integrates a system of ordinary differential equations.
@@ -101,19 +103,21 @@ def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0,
         Function with signature j(t, y, jmat_out, dfdx_out) which modifies
         jmat_out and dfdx_out *inplace*.
     y0: array_like
-        initial values of the dependent variables
+        Initial values of the dependent variables.
     xout: array_like
-        values of the independent variable
+        Values of the independent variable.
     atol: float
-        absolute tolerance
+        Absolute tolerance.
     rtol: float
-        relative tolerance
+        Relative tolerance.
     dx0: float
-        initial step-size
+        Initial step-size.
+    dx_max: float
+        Maximum step-size.
     check_callable: bool (default: False)
-        perform signature sanity checks on ``rhs`` and ``jac``
+        Perform signature sanity checks on ``rhs`` and ``jac``.
     check_indexing: bool (default: False)
-        perform item setting sanity checks on ``rhs`` and ``jac``.
+        Perform item setting sanity checks on ``rhs`` and ``jac``.
     \*\*kwargs:
         'method': str
             One in ``('rosenbrock4', 'dopri5', 'bs')``.
@@ -142,4 +146,4 @@ def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0,
         _check_indexing(rhs, jac, xout[0], y0)
 
     return predefined(rhs, jac, np.asarray(y0, dtype=np.float64), np.asarray(xout, dtype=np.float64),
-                      atol, rtol, dx0, **_bs(kwargs))
+                      atol, rtol, dx0, dx_max, **_bs(kwargs))

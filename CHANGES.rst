@@ -1,3 +1,7 @@
+Unreleased
+==========
+- support for dx_max.
+
 v0.8.0
 ======
 - autorestart

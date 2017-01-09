@@ -26,7 +26,7 @@ cdef dict get_last_info(PyOdeSys * odesys, success=True):
 
 
 def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
-             double atol, double rtol, double dx0=.0, str method='rosenbrock4', int nsteps=500,
+             double atol, double rtol, double dx0=.0, double dx_max=.0, str method='rosenbrock4', int nsteps=500,
              int autorestart=0, bool return_on_error=False, dx0cb=None):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
@@ -40,7 +40,7 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
     try:
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-            &y0[0], x0, xend, nsteps, dx0, autorestart, return_on_error))
+            &y0[0], x0, xend, nsteps, dx0, dx_max, autorestart, return_on_error))
         return xout, yout.reshape(xout.size, ny), get_last_info(
             odesys, False if return_on_error and xout[-1] != xend else True)
     finally:
@@ -50,7 +50,7 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
 def predefined(rhs, jac,
                cnp.ndarray[cnp.float64_t] y0,
                cnp.ndarray[cnp.float64_t, ndim=1] xout,
-               double atol, double rtol, double dx0=.0, method='rosenbrock4',
+               double atol, double rtol, double dx0=.0, double dx_max=.0, method='rosenbrock4',
                int nsteps=500, int autorestart=0, bool return_on_error=False, dx0cb=None):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
@@ -65,7 +65,7 @@ def predefined(rhs, jac,
     try:
         yout = np.empty((xout.size, ny))
         nreached = simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-                                               &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0,
+                                               &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0, dx_max,
                                                autorestart, return_on_error)
         info = get_last_info(odesys, success=False if return_on_error and nreached < xout.size else True)
         info['nreached'] = nreached

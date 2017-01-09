@@ -105,7 +105,7 @@ namespace odeint_anyode{
     struct Integr {
         OdeSys * m_odesys;
         double m_time_cpu = -1.0, m_time_wall = -1.0;
-        value_type m_dx0, m_atol, m_rtol;
+        value_type m_dx0, m_dx_max, m_atol, m_rtol;
         StepType m_styp;
         long int m_mxsteps;
         int m_autorestart;
@@ -115,9 +115,9 @@ namespace odeint_anyode{
         void rhs(const vector_type &yarr, vector_type &dydx, value_type xval);
         void jac(const vector_type & yarr, matrix_type &Jmat,
                  const value_type & xval, vector_type &dfdx);
-        Integr(OdeSys * odesys, value_type dx0, value_type atol, value_type rtol, StepType styp,
+        Integr(OdeSys * odesys, value_type dx0, value_type dx_max, value_type atol, value_type rtol, StepType styp,
                long int mxsteps, int autorestart=0, bool return_on_error=false) :
-            m_odesys(odesys), m_dx0(dx0), m_atol(atol), m_rtol(rtol), m_styp(styp),
+            m_odesys(odesys), m_dx0(dx0), m_dx_max(dx_max), m_atol(atol), m_rtol(rtol), m_styp(styp),
             m_mxsteps(mxsteps), m_autorestart(autorestart), m_return_on_error(return_on_error) {}
 
         std::pair<std::vector<value_type>, std::vector<value_type> >
@@ -140,18 +140,24 @@ namespace odeint_anyode{
             } catch (const std::exception& e) {
                 if (m_autorestart > 0){
                     std::cerr << e.what() << std::endl;
-                    std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
-                              << ") x=" << this->m_xout.back() << "\n";
-                    m_autorestart--;
-                    auto c_nsteps = this->m_nsteps;
-                    auto c_xout = this->m_xout;
-                    auto c_yout = this->m_yout;
-                    adaptive(c_xout.back(), xend, &c_yout[c_yout.size() - m_odesys->get_ny()]);
-                    c_xout.insert(c_xout.end(), m_xout.begin(), m_xout.end());
-                    c_yout.insert(c_yout.end(), m_yout.begin(), m_yout.end());
-                    m_xout = c_xout;
-                    m_yout = c_yout;
-                    m_nsteps += c_nsteps;
+                    if (this->m_xout.size() > 0){
+                        std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
+                                  << ") x=" << this->m_xout.back() << "\n";
+                        m_autorestart--;
+                        auto c_nsteps = this->m_nsteps;
+                        auto c_xout = this->m_xout;
+                        auto c_yout = this->m_yout;
+                        adaptive(c_xout.back(), xend, &c_yout[c_yout.size() - m_odesys->get_ny()]);
+                        c_xout.insert(c_xout.end(), m_xout.begin(), m_xout.end());
+                        c_yout.insert(c_yout.end(), m_yout.begin(), m_yout.end());
+                        m_xout = c_xout;
+                        m_yout = c_yout;
+                        m_nsteps += c_nsteps;
+                    } else {
+                        std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart failed." << "\n";
+                        if (!m_return_on_error)
+                            throw;
+                    }
                 } else {
                     if (!m_return_on_error)
                         throw;
@@ -186,14 +192,20 @@ namespace odeint_anyode{
             } catch (const std::exception& e) {
                 if (m_autorestart > 0){
                     std::cerr << e.what() << std::endl;
-                    std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
-                              << ") x=" << this->m_xout.back() << "\n";
-                    m_autorestart--;
-                    auto c_nsteps = this->m_nsteps;
-                    nreached += predefined(nx - nreached, xout + nreached,
-                                           yout + nreached*m_odesys->get_ny(),
-                                           yout + nreached*m_odesys->get_ny());
-                    this->m_nsteps += c_nsteps;
+                    if (this->m_xout.size() > 0) {
+                        std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart (" << m_autorestart
+                                  << ") x=" << this->m_xout.back() << "\n";
+                        m_autorestart--;
+                        auto c_nsteps = this->m_nsteps;
+                        nreached += predefined(nx - nreached, xout + nreached,
+                                               yout + nreached*m_odesys->get_ny(),
+                                               yout + nreached*m_odesys->get_ny());
+                        this->m_nsteps += c_nsteps;
+                    } else {
+                        std::cerr << "odeint_anyode.hpp:" << __LINE__ << ": Autorestart failed." << "\n";
+                        if (!m_return_on_error)
+                            throw;
+                    }
                 } else {
                     if (!m_return_on_error)
                         throw;
@@ -238,7 +250,8 @@ namespace odeint_anyode{
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
-            auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
+            auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(
+                this->m_atol, this->m_rtol, 1.0, 1.0, this->m_dx_max);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
             integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0,
@@ -258,7 +271,8 @@ namespace odeint_anyode{
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
             try{
-                auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(this->m_atol, this->m_rtol);
+                auto stepper = bulirsch_stoer_dense_out< vector_type, value_type >(
+                    this->m_atol, this->m_rtol, 1.0, 1.0, this->m_dx_max);
                 for (*nreached=1; *nreached < nx; ++*nreached){
                     const int ix = *nreached;
                     this->reset();
@@ -284,7 +298,8 @@ namespace odeint_anyode{
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
 
-            auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(this->m_atol, this->m_rtol);
+            auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(
+                this->m_atol, this->m_rtol, this->m_dx_max);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
             integrate_adaptive(stepper, f, y_, x0, xend, this->m_dx0,
@@ -304,7 +319,8 @@ namespace odeint_anyode{
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
             };
             try {
-                auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(this->m_atol, this->m_rtol);
+                auto stepper = make_dense_output<runge_kutta_dopri5<vector_type, value_type> >(
+                    this->m_atol, this->m_rtol, this->m_dx_max);
                 for (*nreached=1; *nreached < nx; ++*nreached){
                     const int ix = *nreached;
                     this->reset();
@@ -333,7 +349,7 @@ namespace odeint_anyode{
                                      const value_type & xval, vector_type &dfdx) {
                 this->m_odesys->dense_jac_rmaj(xval, &(yarr.data()[0]), nullptr, &(Jmat.data()[0]), ny, &(dfdx.data()[0]));
             };
-            auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol);
+            auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol, this->m_dx_max);
             auto y_ = vec_from_ptr(y0, ny);
             this->reset();
             integrate_adaptive(stepper, std::make_pair(f, j), y_, x0, xend, this->m_dx0,
@@ -357,7 +373,7 @@ namespace odeint_anyode{
                 this->m_odesys->dense_jac_rmaj(xval, &(yarr.data()[0]), nullptr, &(Jmat.data()[0]), ny, &(dfdx.data()[0]));
             };
             try {
-                auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol);
+                auto stepper = make_dense_output<rosenbrock4<value_type> >(this->m_atol, this->m_rtol, this->m_dx_max);
                 for (*nreached=1; *nreached < nx; ++*nreached){
                     const int ix = *nreached;
                     this->reset();
@@ -397,12 +413,13 @@ namespace odeint_anyode{
                     const double xend,
                     long int mxsteps=0,
                     double dx0=0.0,
+                    double dx_max=0.0,
                     int autorestart=0,
                     bool return_on_error=false
                     )
                     //,
                     // const double dx_min=0.0,
-                    // const double dx_max=0.0,
+
                     // long int mxsteps=0)
     {
         if (dx0 == 0.0)
@@ -413,9 +430,11 @@ namespace odeint_anyode{
             else
                 dx0 = std::numeric_limits<double>::epsilon() * 100 * x0;
         }
+        if (dx_max == 0.0)
+            dx_max = INFINITY;
         if (mxsteps == 0)
             mxsteps = 500;
-        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps, autorestart, return_on_error);
+        auto integr = Integr<OdeSys>(odesys, dx0, dx_max, atol, rtol, styp, mxsteps, autorestart, return_on_error);
         auto result = integr.adaptive(x0, xend, y0);
         odesys->last_integration_info.clear();
         odesys->last_integration_info_dbl.clear();
@@ -434,11 +453,11 @@ namespace odeint_anyode{
                           double * const yout,
                           long int mxsteps=0,
                           double dx0=0.0,
+                          double dx_max=0.0,
                           int autorestart=0,
                           bool return_on_error=false
                           )
     // const double dx_min=0.0,
-    // const double dx_max=0.0,
     {
         if (dx0 == 0.0)
             dx0 = odesys->get_dx0(xout[0], y0);
@@ -448,9 +467,11 @@ namespace odeint_anyode{
             else
                 dx0 = std::numeric_limits<double>::epsilon() * 100 * xout[0];
         }
+        if (dx_max == 0.0)
+            dx_max = INFINITY;
         if (mxsteps == 0)
             mxsteps = 500;
-        auto integr = Integr<OdeSys>(odesys, dx0, atol, rtol, styp, mxsteps, autorestart, return_on_error);
+        auto integr = Integr<OdeSys>(odesys, dx0, dx_max, atol, rtol, styp, mxsteps, autorestart, return_on_error);
         int nreached = integr.predefined(nout, xout, y0, yout);
         odesys->last_integration_info.clear();
         odesys->last_integration_info_dbl.clear();

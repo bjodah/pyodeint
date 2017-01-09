@@ -13,11 +13,11 @@ TEST_CASE( "adaptive_autorestart", "[simple_adaptive]" ) {
     double t0=0, tend=60;
     OdeSys odesys(&p[0]);
     const long int mxsteps=30;
-    const double dx0=0.0;
+    const double dx0=1e-13, dx_max=10.0;
     int autorestart=2;
 
-    auto tout_yout = odeint_anyode::simple_adaptive(&odesys, 1e-8, 1e-8, odeint_anyode::StepType::rosenbrock4, &y0[0], t0, tend,
-                                                    mxsteps, dx0, autorestart);
+    auto tout_yout = odeint_anyode::simple_adaptive(&odesys, 1e-6, 1e-6, odeint_anyode::StepType::rosenbrock4, &y0[0], t0, tend,
+                                                    mxsteps, dx0, dx_max, autorestart);
     auto& tout = tout_yout.first;
     auto& yout = tout_yout.second;
     const int ref = tout.size() * odesys.get_ny();
