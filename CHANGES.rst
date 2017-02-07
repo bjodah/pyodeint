@@ -1,3 +1,7 @@
+v0.8.2
+======
+- distributed patched rosenbrock4_controller.hpp
+
 v0.8.1
 ======
 - support for dx_max.
