@@ -1,3 +1,8 @@
+v0.8.3
+======
+- ANYODE_NUM_THREADS
+- return atol & rtol in info dict.
+
 v0.8.2
 ======
 - distributed patched rosenbrock4_controller.hpp
