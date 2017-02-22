@@ -41,8 +41,9 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
             &y0[0], x0, xend, nsteps, dx0, dx_max, autorestart, return_on_error))
-        return xout, yout.reshape(xout.size, ny), get_last_info(
-            odesys, False if return_on_error and xout[-1] != xend else True)
+        nfo = get_last_info(odesys, False if return_on_error and xout[-1] != xend else True)
+        nfo['atol'], nfo['rtol'] = atol, rtol
+        return xout, yout.reshape(xout.size, ny), nfo
     finally:
         del odesys
 
@@ -69,6 +70,7 @@ def predefined(rhs, jac,
                                                autorestart, return_on_error)
         info = get_last_info(odesys, success=False if return_on_error and nreached < xout.size else True)
         info['nreached'] = nreached
+        info['atol'], info['rtol'] = atol, rtol
         return yout, info
     finally:
         del odesys

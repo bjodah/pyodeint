@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include "anyode/anyode_parallel.hpp"
 #include "odeint_anyode.hpp"
 
@@ -31,7 +32,11 @@ namespace odeint_anyode_parallel {
         auto results = std::vector<sa_t>(nsys);
 
         anyode_parallel::ThreadException te;
-        #pragma omp parallel for
+        char * num_threads_var = std::getenv("ANYODE_NUM_THREADS");
+        int nt = (num_threads_var) ? std::atoi(num_threads_var) : 1;
+        if (nt < 0)
+            nt = 1;
+        #pragma omp parallel for num_threads(nt) // OMP_NUM_THREADS should be 1 for openblas LU (small matrices)
         for (int idx=0; idx<nsys; ++idx){
             sa_t local_result;
             te.run([&]{

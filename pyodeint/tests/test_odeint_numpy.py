@@ -72,6 +72,8 @@ def test_integrate_adaptive(method, use_jac):
     # Run twice to catch possible side-effects:
     xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
     xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
+    assert info['success']
+    assert info['atol'] == 1e-8 and info['rtol'] == 1e-8
     assert info['nfev'] > 0
     if use_jac:
         assert info['njev'] > 0
@@ -94,6 +96,7 @@ def test_integrate_predefined(method, use_jac):
     yout, info = integrate_predefined(f, j, y0, xout, 1e-9, 1e-9, dx0,
                                       method=method)
     assert info['success']
+    assert info['atol'] == 1e-9 and info['rtol'] == 1e-9
     assert info['nfev'] > 0
     if use_jac:
         assert info['njev'] > 0
