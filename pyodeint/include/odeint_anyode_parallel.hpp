@@ -52,7 +52,7 @@ namespace odeint_anyode_parallel {
     }
 
     template <class OdeSys>
-    void
+    std::vector<int>
     multi_predefined(std::vector<OdeSys *> odesys,  // vectorized
                      const double atol,
                      const double rtol,
@@ -69,17 +69,19 @@ namespace odeint_anyode_parallel {
                      ){
         const int ny = odesys[0]->get_ny();
         const int nsys = odesys.size();
+        std::vector<int> result(nsys);
 
         anyode_parallel::ThreadException te;
         #pragma omp parallel for
         for (int idx=0; idx<nsys; ++idx){
             te.run([&]{
-                simple_predefined<OdeSys>(odesys[idx], atol, rtol, styp, y0 + idx*ny,
-                                          nout, tout + idx*nout, yout + idx*ny*nout,
-                                          mxsteps, dx0[idx], dx_max[idx], autorestart, return_on_error);
+                result[idx] = simple_predefined<OdeSys>(odesys[idx], atol, rtol, styp, y0 + idx*ny,
+                                                        nout, tout + idx*nout, yout + idx*ny*nout,
+                                                        mxsteps, dx0[idx], dx_max[idx], autorestart, return_on_error);
             });
         }
         te.rethrow();
+        return result;
     }
 
 }

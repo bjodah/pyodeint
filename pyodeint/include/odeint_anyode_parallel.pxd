@@ -21,7 +21,7 @@ cdef extern from "odeint_anyode_parallel.hpp" namespace "odeint_anyode_parallel"
         bool
     ) nogil except +
 
-    cdef vector[pair[vector[int], vector[double]]] multi_predefined[U](
+    cdef vector[int] multi_predefined[U](
         vector[U*],
         double,
         double,
