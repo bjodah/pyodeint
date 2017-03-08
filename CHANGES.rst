@@ -1,3 +1,7 @@
+v0.8.4
+======
+- Fix signature in cython pxd
+
 v0.8.3
 ======
 - ANYODE_NUM_THREADS
