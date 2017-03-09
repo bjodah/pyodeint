@@ -15,6 +15,11 @@ python3 -m pip install --ignore-installed dist/*.tar.gz
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
+(cd examples/; jupyter nbconvert --debug --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
+(cd examples/; ../scripts/render_index.sh *.html)
+./scripts/generate_docs.sh
+
+
 # Make sure repo is pip installable from git-archive zip
 git archive -o /tmp/$PKG_NAME.zip HEAD
 python3 -m pip install --force-reinstall /tmp/$PKG_NAME.zip
