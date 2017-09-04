@@ -1,3 +1,7 @@
+v0.9.0
+======
+- Update AnyODE (8)
+
 v0.8.4
 ======
 - Fix signature in cython pxd
