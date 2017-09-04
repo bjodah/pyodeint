@@ -431,7 +431,7 @@ namespace odeint_anyode{
                 dx0 = std::numeric_limits<double>::epsilon() * 100 * x0;
         }
         if (dx_max == 0.0)
-            dx_max = INFINITY;
+            dx_max = odesys->get_dx_max(x0, y0);
         if (mxsteps == 0)
             mxsteps = 500;
         auto integr = Integr<OdeSys>(odesys, dx0, dx_max, atol, rtol, styp, mxsteps, autorestart, return_on_error);
