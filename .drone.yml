@@ -1,9 +1,9 @@
 build:
-  image: bjodah/bjodahimg16dev:latest
+  image: bjodah/bjodahimg16dev:v1.3
   environment:
-    - CPLUS_INCLUDE_PATH=/opt/boost_1_63_0/include
+    - CPLUS_INCLUDE_PATH=/opt/boost_1_65_0/include
   commands:
-    - echo "#error" >/opt/boost_1_63_0/boost/numeric/odeint/stepper/rosenbrock4_controller.hpp
+    - echo "#error" >/opt/boost_1_65_0/include/boost/numeric/odeint/stepper/rosenbrock4_controller.hpp
     - ./scripts/ci.sh pyodeint
     - ./scripts/prepare_deploy.sh
     - PATH=/opt/miniconda3/bin:$PATH conda build conda-recipe
