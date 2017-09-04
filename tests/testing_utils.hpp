@@ -6,7 +6,7 @@ int rhs_cb(double t, const double * const y, double * const f, void * user_data)
     return 0;
 }
 
-struct Decay : public AnyODE::OdeSysBase {
+struct Decay : public AnyODE::OdeSysBase<double> {
     double m_k;
 
     Decay(double k) : m_k(k) {}
