@@ -1,3 +1,7 @@
+v0.9.2
+======
+- Update AnyODE (12)
+
 v0.9.1
 ======
 - Update AnyODE (11)

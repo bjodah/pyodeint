@@ -24,6 +24,7 @@ sed -i "s/'sphinx.ext.viewcode',/'sphinx.ext.viewcode',\n    'sphinx.ext.autosum
 sed -i "s/alabaster/sphinx_rtd_theme/g" doc/conf.py
 if [[ $NARGS -eq 3 ]]; then
 cat <<EOF>>doc/conf.py
+
 context = {
     'conf_py_path': '/doc/',
     'github_user': '$1',
