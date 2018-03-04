@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import numpy as np
 import pytest
 
@@ -102,8 +103,9 @@ def test_integrate_predefined(method, use_jac):
         assert info['njev'] > 0
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
-    assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
-    assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer
+    if os.name == 'posix':
+        assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
+        assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer
 
 
 def test_adaptive_return_on_error():
