@@ -17,8 +17,8 @@ requires_jac = ('rosenbrock4',)
 
 
 cdef dict get_last_info(PyOdeSys * odesys, success=True):
-    info = {str(k.decode('utf-8')): v for k, v in dict(odesys.last_integration_info).items()}
-    info.update({str(k.decode('utf-8')): v for k, v in dict(odesys.last_integration_info_dbl).items()})
+    info = {str(k.decode('utf-8')): v for k, v in dict(odesys.current_info.nfo_int).items()}
+    info.update({str(k.decode('utf-8')): v for k, v in dict(odesys.current_info.nfo_dbl).items()})
     info['nfev'] = odesys.nfev
     info['njev'] = odesys.njev
     info['success'] = success
