@@ -104,8 +104,8 @@ def test_integrate_predefined(method, use_jac):
     yref = decay_get_Cref(k, y0, xout)
     assert np.allclose(yout, yref)
     if os.name == 'posix':
-        assert 1e-9 < info['time_wall'] < 1.0  # Takes a few ms on a 2012 desktop computer
-        assert 1e-9 < info['time_cpu'] < 1.0  # Takes a few ms on a 2012 desktop computer
+        assert info['time_wall'] >= 0
+        assert info['time_cpu'] >= 0
 
 
 def test_adaptive_return_on_error():

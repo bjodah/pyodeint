@@ -1,3 +1,7 @@
+v0.9.3
+======
+- Relax test of time_cpu & time_jac
+
 v0.9.2
 ======
 - Update AnyODE (12)
