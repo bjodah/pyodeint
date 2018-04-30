@@ -7,7 +7,7 @@ cython_debug/
 doc/
 pyodeint/_odeint.cpp
 MANIFEST
-.cache/
+.*cache/
 __conda_version__.txt
 **/.ipynb_checkpoints/
 **.egg-info
