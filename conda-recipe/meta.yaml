@@ -1,5 +1,5 @@
 {% set name = "pyodeint" %}
-{% set version = "0.9.0+git" %}
+{% set version = "0.10.0.dev0+git" %}
 
 package:
   name: {{ name|lower }}
@@ -10,17 +10,21 @@ source:
 
 build:
   number: 0
+  skip: True  # [win]
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
+    - toolchain
     - python
-    - numpy
     - setuptools
+    - pip
+    - numpy 1.11.*
     - boost
     - cython
   run:
     - python
-    - numpy
+    - numpy >=1.11
 
 test:
   imports:
