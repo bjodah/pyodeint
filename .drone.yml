@@ -1,7 +1,8 @@
 build:
-  image: bjodah/bjodahimg16dev:v1.3
+  image: bjodah/bjodahimg18dev:v1.2
   environment:
-    - CPLUS_INCLUDE_PATH=/opt/boost_1_65_0/include
+    - ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-6.0/bin/llvm-symbolizer
+    - ASAN_OPTIONS=symbolize=1
   commands:
     - echo "#error" >/opt/boost_1_65_0/include/boost/numeric/odeint/stepper/rosenbrock4_controller.hpp
     - ./scripts/ci.sh pyodeint
