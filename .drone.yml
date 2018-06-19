@@ -4,7 +4,6 @@ build:
     - ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-6.0/bin/llvm-symbolizer
     - ASAN_OPTIONS=symbolize=1
   commands:
-    - echo "#error" >/opt/boost_1_65_0/include/boost/numeric/odeint/stepper/rosenbrock4_controller.hpp
     - ./scripts/ci.sh pyodeint
     - ./scripts/prepare_deploy.sh
     - PATH=/opt/miniconda3/bin:$PATH conda build conda-recipe
