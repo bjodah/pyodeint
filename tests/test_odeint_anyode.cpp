@@ -9,7 +9,7 @@ TEST_CASE( "methods", "[OdeintIntegrator]" ) {
     Decay odesys(1.0);
     double dx0 = 1e-12, atol=1e-8, rtol=1e-8, dx_max=INFINITY;
     auto intgr = odeint_anyode::Integr<Decay>(&odesys, dx0, dx_max, atol, rtol, odeint_anyode::StepType::dopri5, 500);
-    std::vector<double> y0 {{1.0}};
+    std::vector<double> y0(1, 1.0);
     std::vector<double> tout {{0.0, 1.0}};
     std::vector<double> yout(2);
     intgr.predefined(tout.size(), &tout[0], &y0[0], &yout[0]);
