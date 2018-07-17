@@ -36,7 +36,7 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
 
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, -1, -1, 0, 0,
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, -1, -1, 0, 0,
                           <PyObject *> dx0cb, <PyObject *>dx_max_cb)
     try:
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
