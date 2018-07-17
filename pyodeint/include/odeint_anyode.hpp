@@ -123,7 +123,7 @@ namespace odeint_anyode{
         std::pair<std::vector<value_type>, std::vector<value_type> >
         adaptive(const value_type x0,
                  const value_type xend,
-                 const value_type * const __restrict__ y0){
+                 const value_type * const ANYODE_RESTRICT y0){
             std::time_t cputime0 = std::clock();
             auto t_start = std::chrono::high_resolution_clock::now();
             std::pair<std::vector<value_type>, std::vector<value_type> > result;
@@ -172,9 +172,9 @@ namespace odeint_anyode{
         }
 
         int predefined(const int nx,
-                       const value_type * const __restrict__ xout,
-                       const value_type * const __restrict__ y0,
-                       value_type * const __restrict__ yout){
+                       const value_type * const ANYODE_RESTRICT xout,
+                       const value_type * const ANYODE_RESTRICT y0,
+                       value_type * const ANYODE_RESTRICT yout){
             int nreached;
             std::time_t cputime0 = std::clock();
             auto t_start = std::chrono::high_resolution_clock::now();
@@ -244,7 +244,7 @@ namespace odeint_anyode{
 
         void adaptive_bulirsch_stoer(const value_type x0,
                                      const value_type xend,
-                                     const value_type * const __restrict__ y0
+                                     const value_type * const ANYODE_RESTRICT y0
                                      ){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
@@ -259,9 +259,9 @@ namespace odeint_anyode{
         }
 
         void predefined_bulirsch_stoer(const int nx,
-                                       const value_type * const __restrict__ xout,
-                                       const value_type * const __restrict__ y0,
-                                       value_type * const __restrict__ yout,
+                                       const value_type * const ANYODE_RESTRICT xout,
+                                       const value_type * const ANYODE_RESTRICT y0,
+                                       value_type * const ANYODE_RESTRICT yout,
                                        int * nreached){
             *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
@@ -292,7 +292,7 @@ namespace odeint_anyode{
 
         void adaptive_dopri5(const value_type x0,
                              const value_type xend,
-                             const value_type * const __restrict__ y0){
+                             const value_type * const ANYODE_RESTRICT y0){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -307,9 +307,9 @@ namespace odeint_anyode{
         }
 
         void predefined_dopri5(const int nx,
-                               const value_type * const __restrict__ xout,
-                               const value_type * const __restrict__ y0,
-                              value_type * const __restrict__ yout,
+                               const value_type * const ANYODE_RESTRICT xout,
+                               const value_type * const ANYODE_RESTRICT y0,
+                              value_type * const ANYODE_RESTRICT yout,
                               int * nreached){
             *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
@@ -340,7 +340,7 @@ namespace odeint_anyode{
 
         void adaptive_rosenbrock4(const value_type x0,
                                   const value_type xend,
-                                  const value_type * const __restrict__ y0){
+                                  const value_type * const ANYODE_RESTRICT y0){
             const int ny = this->m_odesys->get_ny();
             auto f = [&](const vector_type &yarr, vector_type &dydx, value_type xval) {
                 this->m_odesys->rhs(xval, &(yarr.data()[0]), &(dydx.data()[0]));
@@ -357,9 +357,9 @@ namespace odeint_anyode{
         }
 
         void predefined_rosenbrock4(const int nx,
-                                    const value_type * const __restrict__ xout,
-                                    const value_type * const __restrict__ y0,
-                                    value_type * const __restrict__ yout,
+                                    const value_type * const ANYODE_RESTRICT xout,
+                                    const value_type * const ANYODE_RESTRICT y0,
+                                    value_type * const ANYODE_RESTRICT yout,
                                     int * nreached){
             *nreached = 0;
             const auto ny = this->m_odesys->get_ny();
