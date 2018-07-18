@@ -39,6 +39,7 @@ if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
         ])
     ext_modules[0].language = 'c++'
     ext_modules[0].extra_compile_args = ['-std=c++11']
+    ext_modules[0].define_macros = [('ANYODE_NO_LAPACK', '1')]
     ext_modules[0].include_dirs = [package_include, np.get_include(),
                                    os.path.join('external', 'anyode', 'include')]
 
