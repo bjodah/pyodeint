@@ -10,6 +10,9 @@ pyodeint
 .. image:: https://secure.travis-ci.org/bjodah/pyodeint.svg?branch=master
    :target: http://travis-ci.org/bjodah/pyodeint
    :alt: Build status on Travis-CI
+.. image:: https://ci.appveyor.com/api/projects/status/d1vrxhurajou324f?svg=true
+   :target: https://ci.appveyor.com/project/bjodah/pyodeint
+   :alt: Build status on AppVeyor
 .. image:: https://img.shields.io/pypi/v/pyodeint.svg
    :target: https://pypi.python.org/pypi/pyodeint
    :alt: PyPI version
@@ -52,7 +55,7 @@ Simplest way to install is to use the `conda package manager <http://conda.pydat
 
 ::
 
-   $ conda install -c bjodah pyodeint pytest
+   $ conda install -c conda-forge pyodeint pytest
    $ python -m pytest --pyargs pyodeint
 
 tests should pass.
@@ -65,7 +68,7 @@ Source distribution is available here:
 
 here is an example of how to build from source::
 
-   $ CPLUS_INCLUDE_PATH=~/Downloads/boost_1_63_0 python3 setup.py build_ext -i
+   $ CPATH=/opt/boost_1_65_0/include python3 setup.py build_ext -i
 
 
 Examples
