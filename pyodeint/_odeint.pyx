@@ -31,13 +31,15 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
     cdef:
         int ny = y0.shape[y0.ndim - 1]
         PyOdeSys * odesys
+        int mlower=-1, mupper=-1, nquads=0, nroots=0, nnz=-1
+
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
 
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, -1, -1, 0, 0,
-                          <PyObject *> dx0cb, <PyObject *>dx_max_cb)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL,
+                          mlower, mupper, nquads, nroots, <PyObject *> dx0cb, <PyObject *>dx_max_cb, nnz)
     try:
         xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
@@ -59,12 +61,14 @@ def predefined(rhs, jac,
         int nreached
         cnp.ndarray[cnp.float64_t, ndim=2] yout
         PyOdeSys * odesys
+        int mlower=-1, mupper=-1, nquads=0, nroots=0, nnz=-1
+
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, -1, -1, 0, 0,
-                          <PyObject *> dx0cb, <PyObject *>dx_max_cb)
+    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, mlower, mupper,
+                          nquads, nroots, <PyObject *> dx0cb, <PyObject *>dx_max_cb, nnz)
     try:
         yout = np.empty((xout.size, ny))
         nreached = simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
