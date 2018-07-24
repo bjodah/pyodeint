@@ -15,8 +15,10 @@ from odeint_anyode cimport simple_adaptive, simple_predefined, styp_from_name
 steppers = ('rosenbrock4', 'dopri5', 'bulirsch_stoer')
 requires_jac = ('rosenbrock4',)
 
+ctypedef PyOdeSys[double, int] PyOdeSys_t
 
-cdef dict get_last_info(PyOdeSys * odesys, success=True):
+
+cdef dict get_last_info(PyOdeSys_t * odesys, success=True):
     info = {str(k.decode('utf-8')): v for k, v in dict(odesys.current_info.nfo_int).items()}
     info.update({str(k.decode('utf-8')): v for k, v in dict(odesys.current_info.nfo_dbl).items()})
     info['nfev'] = odesys.nfev
@@ -30,7 +32,7 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
              int autorestart=0, bool return_on_error=False, dx0cb=None, dx_max_cb=None):
     cdef:
         int ny = y0.shape[y0.ndim - 1]
-        PyOdeSys * odesys
+        PyOdeSys_t * odesys
         int mlower=-1, mupper=-1, nquads=0, nroots=0, nnz=-1
 
     if method in requires_jac and jac is None:
@@ -38,10 +40,10 @@ def adaptive(rhs, jac, cnp.ndarray[cnp.float64_t] y0, double x0, double xend,
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
 
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL,
+    odesys = new PyOdeSys_t(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL,
                           mlower, mupper, nquads, nroots, <PyObject *> dx0cb, <PyObject *>dx_max_cb, nnz)
     try:
-        xout, yout = map(np.asarray, simple_adaptive[PyOdeSys](
+        xout, yout = map(np.asarray, simple_adaptive[PyOdeSys_t](
             odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
             &y0[0], x0, xend, nsteps, dx0, dx_max, autorestart, return_on_error))
         nfo = get_last_info(odesys, False if return_on_error and xout[-1] != xend else True)
@@ -60,20 +62,20 @@ def predefined(rhs, jac,
         int ny = y0.shape[y0.ndim - 1]
         int nreached
         cnp.ndarray[cnp.float64_t, ndim=2] yout
-        PyOdeSys * odesys
+        PyOdeSys_t * odesys
         int mlower=-1, mupper=-1, nquads=0, nroots=0, nnz=-1
 
     if method in requires_jac and jac is None:
         raise ValueError("Method requires explicit jacobian callback")
     if np.isnan(y0).any():
         raise ValueError("NaN found in y0")
-    odesys = new PyOdeSys(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, mlower, mupper,
+    odesys = new PyOdeSys_t(ny, <PyObject *>rhs, <PyObject *>jac, NULL, NULL, NULL, NULL, mlower, mupper,
                           nquads, nroots, <PyObject *> dx0cb, <PyObject *>dx_max_cb, nnz)
     try:
         yout = np.empty((xout.size, ny))
-        nreached = simple_predefined[PyOdeSys](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
-                                               &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0, dx_max,
-                                               autorestart, return_on_error)
+        nreached = simple_predefined[PyOdeSys_t](odesys, atol, rtol, styp_from_name(method.lower().encode('UTF-8')),
+                                                 &y0[0], xout.size, &xout[0], &yout[0, 0], nsteps, dx0, dx_max,
+                                                 autorestart, return_on_error)
         info = get_last_info(odesys, success=False if return_on_error and nreached < xout.size else True)
         info['nreached'] = nreached
         info['atol'], info['rtol'] = atol, rtol
