@@ -1,3 +1,7 @@
+v0.9.7
+======
+- Fix MSVC for AnyODE 16+
+
 v0.9.6
 ======
 - Maintainence release of 0.9.x branch
