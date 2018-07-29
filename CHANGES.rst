@@ -1,3 +1,11 @@
+v0.9.6
+======
+- Maintainence release of 0.9.x branch
+
+v0.9.5
+======
+- Invalidated release: use pyodeint >0.9 instead
+
 v0.9.4
 ======
 - Only require C++11
