@@ -1,3 +1,7 @@
+v0.9.8
+======
+- Fix MSVC __restrict
+
 v0.9.7
 ======
 - Fix MSVC for AnyODE 16+
