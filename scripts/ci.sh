@@ -13,7 +13,8 @@ cd tests/; make CXX=clang++-6.0 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd
 python3 setup.py sdist
 python3 -m pip install --ignore-installed dist/*.tar.gz
 (cd /; python3 -m pytest --pyargs $PKG_NAME)
-PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
+python3 -m pip install --user -e .[all]
+PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 (cd examples/; jupyter nbconvert --debug --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
