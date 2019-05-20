@@ -59,7 +59,7 @@ def integrate_adaptive(rhs, jac, y0, x0, xend, atol, rtol, dx0=.0, dx_max=.0,
         Perform signature sanity checks on ``rhs`` and ``jac``.
     check_indexing: bool (default: False)
         Perform item setting sanity checks on ``rhs`` and ``jac``.
-    \*\*kwargs:
+    \\*\\*kwargs:
         'method': str
             'rosenbrock4', 'dopri5' or 'bs'
         'return_on_error': bool
@@ -118,7 +118,7 @@ def integrate_predefined(rhs, jac, y0, xout, atol, rtol, dx0=0.0, dx_max=0.0,
         Perform signature sanity checks on ``rhs`` and ``jac``.
     check_indexing: bool (default: False)
         Perform item setting sanity checks on ``rhs`` and ``jac``.
-    \*\*kwargs:
+    \\*\\*kwargs:
         'method': str
             One in ``('rosenbrock4', 'dopri5', 'bs')``.
         'return_on_error': bool

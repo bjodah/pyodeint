@@ -73,9 +73,13 @@ def _ensure_5args(func):
         return None
 
     self_arg = 1 if inspect.ismethod(func) else 0
-    if len(inspect.getargspec(func)[0]) == 5 + self_arg:
+    if hasattr(inspect, 'getfullargspec'):
+        args = inspect.getfullargspec(func)[0]
+    else:  # Python 2:
+        args = inspect.getargspec(func)[0]
+    if len(args) == 5 + self_arg:
         return func
-    if len(inspect.getargspec(func)[0]) == 4 + self_arg:
+    elif len(args) == 4 + self_arg:
         return lambda t, y, J, dfdt, fy=None: func(t, y, J, dfdt)
     else:
         raise ValueError("Incorrect numer of arguments")
