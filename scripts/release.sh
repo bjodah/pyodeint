@@ -1,7 +1,7 @@
 #!/bin/bash -xeu
 # Usage:
 #
-#    $ ./scripts/release.sh v1.2.3 ~/anaconda2/bin myserver.example.com GITHUB_USER GITHUB_REPO
+#    $ ./scripts/release.sh v1.2.3 myserver.example.com GITHUB_USER GITHUB_REPO
 #
 
 if [[ $1 != v* ]]; then
@@ -26,7 +26,7 @@ export PYTHONPATH=$(pwd)
 ./scripts/run_tests.sh
 env ${PKG_UPPER}_RELEASE_VERSION=v$VERSION python3 setup.py sdist
 #python3 -m pip install --user -e .[docs]
-env ${PKG_UPPER}_RELEASE_VERSION=v$VERSION ./scripts/generate_docs.sh $4 ${5:-$PKG} v$VERSION
+env ${PKG_UPPER}_RELEASE_VERSION=v$VERSION ./scripts/generate_docs.sh
 
 # All went well, add a tag and push it.
 git tag -a v$VERSION -m v$VERSION
