@@ -7,8 +7,8 @@ fi
 
 cd tests/; make EXTRA_FLAGS=-D_GLIBCXX_DEBUG; make clean; cd -
 cd tests/; make EXTRA_FLAGS=-DNDEBUG; make clean; cd -
-cd tests/; make CXX=clang++-6.0 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
-cd tests/; make CXX=clang++-6.0 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
+cd tests/; make CXX=clang++-8 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
+cd tests/; make CXX=clang++-8 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
 
 python3 setup.py sdist
 python3 -m pip install --ignore-installed dist/*.tar.gz
