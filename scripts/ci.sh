@@ -5,10 +5,14 @@ if [[ "$CI_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
     echo ${CI_BRANCH} | tail -c +2 > __conda_version__.txt
 fi
 
+cd tests/; make CXX=clang++-10 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
+cd tests/; make CXX=clang++-10 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
+
+export CC=gcc-10
+export CXX=g++-10
+
 cd tests/; make EXTRA_FLAGS=-D_GLIBCXX_DEBUG; make clean; cd -
 cd tests/; make EXTRA_FLAGS=-DNDEBUG; make clean; cd -
-cd tests/; make CXX=clang++-8 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
-cd tests/; make CXX=clang++-8 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
 
 python3 setup.py sdist
 python3 -m pip install --ignore-installed dist/*.tar.gz
@@ -20,7 +24,6 @@ PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 (cd examples/; jupyter nbconvert --debug --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
 (cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
-
 
 # Make sure repo is pip installable from git-archive zip
 git archive -o /tmp/$PKG_NAME.zip HEAD
