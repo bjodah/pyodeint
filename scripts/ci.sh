@@ -24,8 +24,3 @@ PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/render_notebooks.sh examples/
 (cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
-
-# Make sure repo is pip installable from git-archive zip
-git archive -o /tmp/$PKG_NAME.zip HEAD
-python3 -m pip install --force-reinstall /tmp/$PKG_NAME.zip
-(cd /; python3 -c "from ${PKG_NAME} import get_include as gi; import os; assert 'odeint_anyode_nogil.pxd' in os.listdir(gi())")
