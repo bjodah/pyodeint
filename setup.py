@@ -23,7 +23,7 @@ pkg_name = 'pyodeint'
 
 
 def _path_under_setup(*args):
-    return os.path.join(os.path.dirname(__file__), *args)
+    return os.path.join(*args)
 
 _src = {ext: _path_under_setup(pkg_name, '_odeint.' + ext) for ext in "cpp pyx".split()}
 if _HAVE_CYTHON and os.path.exists(_src["pyx"]):
