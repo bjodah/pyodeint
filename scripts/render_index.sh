@@ -17,7 +17,7 @@ cat <<EOF>index.html
 EOF
 for f in $@; do
     img=$(basename $f .html).png
-    QT_QPA_PLATFORM=offscreen phantomjs $(unset CDPATH && cd "$(dirname "$0")" && echo $PWD)/rasterize.js $f $tmpdir/$img 1200px*900px
+    wkhtmltopdf --crop-w 1200px --crop-h 900px $f $tmpdir/$img
     convert $tmpdir/$img -resize 400x300 thumbs/$img
     cat <<EOF>>index.html
 <p style='text-align: center'>
