@@ -21,7 +21,7 @@ python3 -m pip install --user -e .[all]
 PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
-(cd examples/; jupyter nbconvert --debug --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
+./scripts/render_notebooks.sh examples/
 (cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
 
