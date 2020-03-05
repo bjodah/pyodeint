@@ -1,0 +1,7 @@
+pyodeint package
+================
+
+.. automodule:: pyodeint
+   :members:
+   :undoc-members:
+   :show-inheritance:
