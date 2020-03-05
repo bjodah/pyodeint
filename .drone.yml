@@ -11,6 +11,7 @@ build:
     - ASAN_OPTIONS=symbolize=1
     - CPLUS_INCLUDE_PATH=/opt/boost_1_72_p/include
   commands:
+    - strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5  # stackoverflow.com/questions/54582864/
     - ./scripts/ci.sh pyodeint
     - ./scripts/prepare_deploy.sh
     - bash -c '[[ $(python3 setup.py --version) =~ ^[0-9]+.* ]]'
