@@ -18,6 +18,7 @@ except ImportError:
     _HAVE_CYTHON = False
 else:
     _HAVE_CYTHON = True
+    assert cython  # silence pep8
 
 pkg_name = 'pyodeint'
 
