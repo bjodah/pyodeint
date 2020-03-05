@@ -17,7 +17,7 @@ TEST_CASE( "decay_adaptive", "[multi_adaptive]" ) {
     std::vector<double> dx_max {{ 2.0, 2.0 }};
 
     auto result = odeint_anyode_parallel::multi_adaptive(
-            systems, {1e-10}, 1e-10, odeint_anyode::StepType::bulirsch_stoer, &y0[0], &t0[0],
+            systems, 1e-10, 1e-10, odeint_anyode::StepType::bulirsch_stoer, &y0[0], &t0[0],
             &tend[0], mxsteps, &dx0[0], &dx_max[0]);
     for (int idx=0; idx<2; ++idx){
         const auto& tout = result[idx].first;
