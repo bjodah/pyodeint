@@ -1,11 +1,10 @@
 #!/bin/bash -xeu
 # Usage:
 #
-#    $ ./scripts/post_release.sh v1.2.3 myserver githubuser
+#    $ ./scripts/post_release.sh v1.2.3 myserver
 #
 VERSION=${1#v}
 SERVER=$2
-GITHUBUSER=$3
 PKG=$(find . -maxdepth 2 -name __init__.py -print0 | xargs -0 -n1 dirname | xargs basename)
 PKG_UPPER=$(echo $PKG | tr '[:lower:]' '[:upper:]')
 SDIST_FILE=dist/${PKG}-$VERSION.tar.gz
@@ -24,11 +23,11 @@ sed -i -E \
     -e "/cython/d" \
     dist/conda-recipe-$VERSION/meta.yaml
 
-ssh $PKG@$SERVER 'mkdir -p ~/public_html/conda-packages'
-for CONDA_PY in 27 35 36; do
-    anfilte-build . dist/conda-recipe-$VERSION dist/ --python ${CONDA_PY}
-    scp dist/linux-64/${PKG}-${VERSION}-py${CONDA_PY}*.bz2 $PKG@$SERVER:~/public_html/conda-packages/
-done
+# ssh $PKG@$SERVER 'mkdir -p ~/public_html/conda-packages'
+# for CONDA_PY in 27 35 36; do
+#     anfilte-build . dist/conda-recipe-$VERSION dist/ --python ${CONDA_PY}
+#     scp dist/linux-64/${PKG}-${VERSION}-py${CONDA_PY}*.bz2 $PKG@$SERVER:~/public_html/conda-packages/
+# done
 ssh $PKG@$SERVER 'mkdir -p ~/public_html/conda-recipes'
 scp -r dist/conda-recipe-$VERSION/ $PKG@$SERVER:~/public_html/conda-recipes/
 scp "$SDIST_FILE" "$PKG@$SERVER:~/public_html/releases/"
