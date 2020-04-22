@@ -1,6 +1,20 @@
 CXX ?= g++
 LIBS ?=-lm
-CXXFLAGS ?= -std=c++11 -Wall -Wextra -Werror -pedantic -g -ggdb -O0
+WARNINGS ?= \
+-Wall \
+-Wextra \
+-Wredundant-decls \
+-Wcast-align \
+-Wmissing-include-dirs \
+-Wswitch-enum \
+-Wswitch-default \
+-Winvalid-pch \
+-Wredundant-decls \
+-Wformat=2 \
+-Wmissing-format-attribute \
+-Wformat-nonliteral \
+-Wodr
+CXXFLAGS ?= -std=c++11 $(WARNINGS) -Werror -pedantic -g -ggdb -O0
 #-D_GLIBCXX_DEBUG
 CXXFLAGS += $(EXTRA_FLAGS)
 INCLUDE ?= -I../pyodeint/include -I../external/anyode/include
