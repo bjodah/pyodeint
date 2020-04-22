@@ -1,3 +1,7 @@
+v0.10.4
+=======
+- update AnyODE
+
 v0.10.3
 =======
 - update setup.py to re-run Cython when .pyx available
