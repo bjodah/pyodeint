@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyodeint package &mdash; pyodeint 0.10.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to pyodeint’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyodeint
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyodeint package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyodeint</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>pyodeint package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyodeint.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pyodeint">
+<span id="pyodeint-package"></span><h1>pyodeint package<a class="headerlink" href="#module-pyodeint" title="Permalink to this headline">¶</a></h1>
+<p>Python binding for odeint from boost.</p>
+<dl class="py function">
+<dt id="pyodeint.get_include">
+<code class="sig-prename descclassname">pyodeint.</code><code class="sig-name descname">get_include</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyodeint.html#get_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyodeint.get_include" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="pyodeint.integrate_adaptive">
+<code class="sig-prename descclassname">pyodeint.</code><code class="sig-name descname">integrate_adaptive</code><span class="sig-paren">(</span><em class="sig-param">rhs</em>, <em class="sig-param">jac</em>, <em class="sig-param">y0</em>, <em class="sig-param">x0</em>, <em class="sig-param">xend</em>, <em class="sig-param">atol</em>, <em class="sig-param">rtol</em>, <em class="sig-param">dx0=0.0</em>, <em class="sig-param">dx_max=0.0</em>, <em class="sig-param">check_callable=False</em>, <em class="sig-param">check_indexing=False</em>, <em class="sig-param">\*\*kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyodeint.html#integrate_adaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyodeint.integrate_adaptive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrates a system of ordinary differential equations.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rhs: callable</strong></dt><dd><p>Function with signature f(t, y, fout) which modifies fout <em>inplace</em>.</p>
+</dd>
+<dt><strong>jac: callable</strong></dt><dd><p>Function with signature j(t, y, jmat_out, dfdx_out) which modifies
+jmat_out and dfdx_out <em>inplace</em>.</p>
+</dd>
+<dt><strong>y0: array_like</strong></dt><dd><p>Initial values of the dependent variables.</p>
+</dd>
+<dt><strong>x0: float</strong></dt><dd><p>Initial value of the independent variable.</p>
+</dd>
+<dt><strong>xend: float</strong></dt><dd><p>Stopping value for the independent variable.</p>
+</dd>
+<dt><strong>atol: float</strong></dt><dd><p>Absolute tolerance.</p>
+</dd>
+<dt><strong>rtol: float</strong></dt><dd><p>Relative tolerance.</p>
+</dd>
+<dt><strong>dx0: float</strong></dt><dd><p>Initial step-size.</p>
+</dd>
+<dt><strong>dx_max: float</strong></dt><dd><p>Maximum step-size.</p>
+</dd>
+<dt><strong>check_callable: bool (default: False)</strong></dt><dd><p>Perform signature sanity checks on <code class="docutils literal notranslate"><span class="pre">rhs</span></code> and <code class="docutils literal notranslate"><span class="pre">jac</span></code>.</p>
+</dd>
+<dt><strong>check_indexing: bool (default: False)</strong></dt><dd><p>Perform item setting sanity checks on <code class="docutils literal notranslate"><span class="pre">rhs</span></code> and <code class="docutils literal notranslate"><span class="pre">jac</span></code>.</p>
+</dd>
+<dt><strong>**kwargs:</strong></dt><dd><dl class="simple">
+<dt>‘method’: str</dt><dd><p>‘rosenbrock4’, ‘dopri5’ or ‘bs’</p>
+</dd>
+<dt>‘return_on_error’: bool</dt><dd><p>Returns on error without raising an excpetion (with <code class="docutils literal notranslate"><span class="pre">'success'==False</span></code>).</p>
+</dd>
+<dt>‘autorestart’: int</dt><dd><p>Useful for autonomous systems where conditions change during integration.
+Will restart the integration with <code class="docutils literal notranslate"><span class="pre">x==0</span></code>.</p>
+</dd>
+<dt>‘dx0cb’: callable</dt><dd><p>Callback for calculating dx0 (make sure to pass <code class="docutils literal notranslate"><span class="pre">dx0==0.0</span></code>) to enable.
+Signature: <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">y[:])</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt>(xout, yout, info):</dt><dd><p>xout: 1-dimensional array of values for the independent variable
+yout: 2-dimensional array of the dependent variables (axis 1) for</p>
+<blockquote>
+<div><p>values corresponding to xout (axis 0)</p>
+</div></blockquote>
+<p>info: dictionary with information about the integration</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyodeint.integrate_predefined">
+<code class="sig-prename descclassname">pyodeint.</code><code class="sig-name descname">integrate_predefined</code><span class="sig-paren">(</span><em class="sig-param">rhs</em>, <em class="sig-param">jac</em>, <em class="sig-param">y0</em>, <em class="sig-param">xout</em>, <em class="sig-param">atol</em>, <em class="sig-param">rtol</em>, <em class="sig-param">dx0=0.0</em>, <em class="sig-param">dx_max=0.0</em>, <em class="sig-param">check_callable=False</em>, <em class="sig-param">check_indexing=False</em>, <em class="sig-param">\*\*kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyodeint.html#integrate_predefined"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyodeint.integrate_predefined" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrates a system of ordinary differential equations.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rhs: callable</strong></dt><dd><p>Function with signature f(t, y, fout) which modifies fout <em>inplace</em>.</p>
+</dd>
+<dt><strong>jac: callable</strong></dt><dd><p>Function with signature j(t, y, jmat_out, dfdx_out) which modifies
+jmat_out and dfdx_out <em>inplace</em>.</p>
+</dd>
+<dt><strong>y0: array_like</strong></dt><dd><p>Initial values of the dependent variables.</p>
+</dd>
+<dt><strong>xout: array_like</strong></dt><dd><p>Values of the independent variable.</p>
+</dd>
+<dt><strong>atol: float</strong></dt><dd><p>Absolute tolerance.</p>
+</dd>
+<dt><strong>rtol: float</strong></dt><dd><p>Relative tolerance.</p>
+</dd>
+<dt><strong>dx0: float</strong></dt><dd><p>Initial step-size.</p>
+</dd>
+<dt><strong>dx_max: float</strong></dt><dd><p>Maximum step-size.</p>
+</dd>
+<dt><strong>check_callable: bool (default: False)</strong></dt><dd><p>Perform signature sanity checks on <code class="docutils literal notranslate"><span class="pre">rhs</span></code> and <code class="docutils literal notranslate"><span class="pre">jac</span></code>.</p>
+</dd>
+<dt><strong>check_indexing: bool (default: False)</strong></dt><dd><p>Perform item setting sanity checks on <code class="docutils literal notranslate"><span class="pre">rhs</span></code> and <code class="docutils literal notranslate"><span class="pre">jac</span></code>.</p>
+</dd>
+<dt><strong>**kwargs:</strong></dt><dd><dl class="simple">
+<dt>‘method’: str</dt><dd><p>One in <code class="docutils literal notranslate"><span class="pre">('rosenbrock4',</span> <span class="pre">'dopri5',</span> <span class="pre">'bs')</span></code>.</p>
+</dd>
+<dt>‘return_on_error’: bool</dt><dd><p>Returns on error without raising an excpetion (with <code class="docutils literal notranslate"><span class="pre">'success'==False</span></code>).</p>
+</dd>
+<dt>‘autorestart’: int</dt><dd><p>Useful for autonomous systems where conditions change during integration.
+Will restart the integration with <code class="docutils literal notranslate"><span class="pre">x==0</span></code>.</p>
+</dd>
+<dt>‘dx0cb’: callable</dt><dd><p>Callback for calculating dx0 (make sure to pass <code class="docutils literal notranslate"><span class="pre">dx0==0.0</span></code>) to enable.
+Signature: <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">y[:])</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt>(result, info):</dt><dd><dl class="simple">
+<dt>result: 2-dimensional array of the dependent variables (axis 1) for</dt><dd><p>values corresponding to xout (axis 0)</p>
+</dd>
+</dl>
+<p>info: dictionary with information about the integration</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pyodeint’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
