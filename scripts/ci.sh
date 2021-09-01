@@ -1,17 +1,16 @@
 #!/bin/bash -xeu
 PKG_NAME=${1:-${CI_REPO##*/}}
-if [[ "$CI_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
+if [[ "$DRONE_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
     eval export ${PKG_NAME^^}_RELEASE_VERSION=\$CI_BRANCH
-    echo ${CI_BRANCH} | tail -c +2 > __conda_version__.txt
 fi
 
-cd tests/; make CXX=clang++-10 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
-cd tests/; make CXX=clang++-10 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
+cd tests/; make CXX=clang++-13 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
+cd tests/; make CXX=clang++-13 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
 
-export CC=gcc-10
-export CXX=g++-10
+export CC=gcc-11
+export CXX=g++-11
 
-cd tests/; make EXTRA_FLAGS=-D_GLIBCXX_DEBUG; make clean; cd -
+cd tests/; make EXTRA_FLAGS="-D_GLIBCXX_DEBUG -D_GLIBCXX_PEDANTIC"; make clean; cd -
 cd tests/; make EXTRA_FLAGS=-DNDEBUG; make clean; cd -
 
 python3 setup.py sdist
