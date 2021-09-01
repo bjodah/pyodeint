@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: cython -*-
 # distutils: language = c++
-# distutils: extra_compile_args = -std=c++11
+# distutils: extra_compile_args = -std=c++20
+# cython: language_level=3str
 
 from cpython.ref cimport PyObject
 from libcpp cimport bool

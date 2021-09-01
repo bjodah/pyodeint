@@ -14,7 +14,7 @@ WARNINGS ?= \
 -Wmissing-format-attribute \
 -Wformat-nonliteral \
 -Wodr
-CXXFLAGS ?= -std=c++11 $(WARNINGS) -Werror -pedantic -g -ggdb -O0
+CXXFLAGS ?= -std=c++20 $(WARNINGS) -Werror -pedantic -g -ggdb -O0
 #-D_GLIBCXX_DEBUG
 CXXFLAGS += $(EXTRA_FLAGS)
 INCLUDE ?= -I../pyodeint/include -I../external/anyode/include
