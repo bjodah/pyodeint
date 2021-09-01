@@ -21,6 +21,8 @@ else:
     assert cython  # silence pep8
 
 pkg_name = 'pyodeint'
+url = 'https://github.com/bjodah/' + pkg_name
+license = 'BSD'
 
 
 def _path_under_setup(*args):
@@ -52,21 +54,17 @@ if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
             os.path.join('external', 'anyode', 'cython_def')
         ])
     ext_modules[0].language = 'c++'
-    ext_modules[0].extra_compile_args = ['-std=c++11']
-    ext_modules[0].define_macros = [('ANYODE_NO_LAPACK', '1')]
+    ext_modules[0].extra_compile_args = ['-std=c++17']
+    ext_modules[0].define_macros = [
+        ('ANYODE_NO_LAPACK', '1'),
+        ('NDEBUG', None),
+        ('BOOST_UBLAS_TYPE_CHECK', 0)
+    ]
     ext_modules[0].include_dirs = [package_include, np.get_include(),
                                    os.path.join('external', 'anyode', 'include')]
 
 RELEASE_VERSION = os.environ.get('%s_RELEASE_VERSION' % pkg_name.upper(), '')
 
-# http://conda.pydata.org/docs/build.html#environment-variables-set-during-the-build-process
-CONDA_BUILD = os.environ.get('CONDA_BUILD', '0') == '1'
-if CONDA_BUILD:
-    try:
-        RELEASE_VERSION = 'v' + open(
-            '__conda_version__.txt', 'rt').readline().rstrip()
-    except IOError:
-        pass
 
 release_py_path = _path_under_setup(pkg_name, '_release.py')
 
@@ -115,8 +113,8 @@ setup_kwargs = dict(
     classifiers=classifiers,
     author='Björn Dahlgren',
     author_email='bjodah@DELETEMEgmail.com',
-    license='BSD',
-    url='https://github.com/bjodah/' + pkg_name,
+    license=license,
+    url=url,
     packages=[pkg_name] + tests,
     include_package_data=True,
     install_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
