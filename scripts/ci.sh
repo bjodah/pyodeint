@@ -4,8 +4,8 @@ if [[ "$DRONE_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
     eval export ${PKG_NAME^^}_RELEASE_VERSION=\$CI_BRANCH
 fi
 
-cd tests/; make CXX=clang++-13 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
-cd tests/; make CXX=clang++-13 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
+cd tests/; make CXX=clang++-12 EXTRA_FLAGS=-fsanitize=address; make clean; cd -
+cd tests/; make CXX=clang++-12 EXTRA_FLAGS=-fsanitize=undefined; make clean; cd -
 
 export CC=gcc-11
 export CXX=g++-11
