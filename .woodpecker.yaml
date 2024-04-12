@@ -1,0 +1,26 @@
+# clone:
+#   depth: 2
+#   recursive: true
+#   submodule_override:
+#     external/anyode: git://github.com/bjodah/anyode.git
+
+steps:
+  name: build-and-test
+  image: bjodah/triceratops-3:14 #bjodahimg20dev:v1.1.0
+  environment:
+    - PYTHONMALLOC=malloc
+  commands:
+    - ./scripts/ci.sh pyodeint
+    - ./scripts/prepare_deploy.sh
+    - if grep "DO-NOT-MERGE!" -R . --exclude ".woodpecker.yaml"; then exit 1; fi
+
+# deploy:
+
+#   rsync:
+#     host: hera.physchem.kth.se
+#     port: 22
+#     user: pyodeint
+#     source: deploy/
+#     target: ~
+#     recursive: true
+#     delete: false
