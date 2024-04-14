@@ -43,7 +43,7 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         bool,
     ) except +
 
-    cdef StepType styp_from_name(string) nogil except +
+    cdef StepType styp_from_name(string) except + nogil
     cdef bool requires_jacobian(StepType) nogil
 
 

@@ -1,5 +1,5 @@
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main()
-#include "catch.hpp"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include <math.h>
 #include <vector>
 #include "anyode/anyode.hpp"
@@ -7,7 +7,7 @@
 #include "cetsa_case.hpp"
 
 
-TEST_CASE( "adaptive_autorestart", "[simple_adaptive]" ) {
+TEST_CASE( "adaptive_autorestart" ) {
     std::vector<double> p = {{298.15, 39390, -135.3, 18010, 44960, 48.2, 65919.5, -93.8304, 1780, 3790, 57.44, 19700, -157.4}};
     std::vector<double> y0 = {{8.99937e-07, 0.000693731, 0.000264211, 0.000340312, 4.11575e-05}};
     double t0=0, tend=60;
