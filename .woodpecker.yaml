@@ -9,7 +9,7 @@ when:
 
 steps:
   - name: build-and-test
-    image: bjodah/triceratops-3:14 #bjodahimg20dev:v1.1.0
+    image: cont-reg.bjodah.se:443/bjodah/triceratops-3:14 #bjodahimg20dev:v1.1.0
     environment:
       - PYTHONMALLOC=malloc
     commands:
