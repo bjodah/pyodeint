@@ -82,7 +82,7 @@ def test_integrate_adaptive(method, use_jac):
     gc.collect()
     nNone2 = sys.getrefcount(None)
     delta = nNone2 - nNone1
-    assert nIter//10 < delta < nIter//10
+    assert -nIter//10 < delta < nIter//10
 
     assert info['success']
     assert info['atol'] == 1e-8 and info['rtol'] == 1e-8
