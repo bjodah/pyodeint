@@ -7,6 +7,14 @@ import pytest
 
 from pyodeint import integrate_adaptive, integrate_predefined
 
+def _get_refcount_None():
+    if hasattr(sys, 'getrefcount'):
+        gc.collect()
+        gc.collect()
+        return sys.getrefcount(None)
+    else:  # e.g. pypy
+        return 0
+
 
 decay_analytic = {
     0: lambda y0, k, t: (
@@ -55,7 +63,7 @@ def _get_f_j(k):
 
 methods = [
     ('dopri5', False),
-    ('bs', False),
+    ('bulirsch_stoer', False),
     # rosenbrock4 suffered a massive performance regression:
     #   - https://github.com/headmyshoulder/odeint-v2/issues/189
     #   - https://github.com/bjodah/pyodeint/pull/16
@@ -76,11 +84,10 @@ def test_integrate_adaptive(method, use_jac):
     nIter = 100
     for ii in range(nIter):
         if ii == 1:
-            gc.collect()
-            nNone1 = sys.getrefcount(None)
+            nNone1 = _get_refcount_None()
         xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
     gc.collect()
-    nNone2 = sys.getrefcount(None)
+    nNone2 = _get_refcount_None()
     delta = nNone2 - nNone1
     assert -nIter//10 < delta < nIter//10
 
