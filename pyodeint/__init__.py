@@ -22,9 +22,9 @@ def get_include():
 
 
 def _bs(kwargs):
-    # DEPRECATED accept 'bs' as short for 'bulirsh_stoer'
+    # DEPRECATED accept 'bs' as short for 'bulirsch_stoer'
     if kwargs.get('method', '-') == 'bs':
-        warnings.warn('Using method="bs" is depreacted, use "bulirsh_stoer" instead.', DeprecationWarning)
+        warnings.warn('Using method="bs" is depreacted, use "bulirsch_stoer" instead.', DeprecationWarning)
         kwargs['method'] = 'bulirsch_stoer'
     return kwargs
 
