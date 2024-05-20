@@ -1,3 +1,7 @@
+v0.10.7
+=======
+- setup.py: Explicitly set -std=c++17 (boost math 1.85 req. 14+)
+
 v0.10.6
 =======
 - Another update of AnyODE
