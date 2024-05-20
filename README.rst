@@ -1,18 +1,9 @@
 pyodeint
 ========
 
-.. image:: http://hera.physchem.kth.se:9090/api/badges/bjodah/pyodeint/status.svg
-   :target: http://hera.physchem.kth.se:9090/bjodah/pyodeint
+.. image:: http://hackspett.bjodah.se/api/badges/6/status.svg
+   :target: http://hackspett.bjodah.se/repos/6
    :alt: Build status
-.. image:: https://circleci.com/gh/bjodah/pyodeint.svg?style=svg
-   :target: https://circleci.com/gh/bjodah/pyodeint
-   :alt: Build status on CircleCI
-.. image:: https://secure.travis-ci.org/bjodah/pyodeint.svg?branch=master
-   :target: http://travis-ci.org/bjodah/pyodeint
-   :alt: Build status on Travis-CI
-.. image:: https://ci.appveyor.com/api/projects/status/d1vrxhurajou324f?svg=true
-   :target: https://ci.appveyor.com/project/bjodah/pyodeint
-   :alt: Build status on AppVeyor
 .. image:: https://img.shields.io/pypi/v/pyodeint.svg
    :target: https://pypi.python.org/pypi/pyodeint
    :alt: PyPI version
