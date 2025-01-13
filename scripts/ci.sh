@@ -7,7 +7,7 @@ export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-3/boost-1.*/include")
 PKG_NAME=${1:-${CI_REPO_NAME##*/}}
 
 source /opt-3/cpython-v3.11-apt-deb/bin/activate
-
+pip install --upgrade numpy cython
 #################### Install and test python package  ####################
 
 python3 setup.py sdist
