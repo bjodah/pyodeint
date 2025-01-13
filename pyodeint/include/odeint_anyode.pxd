@@ -26,7 +26,7 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         double,
         int,
         bool
-    ) except +
+    ) except+
 
     cdef pair[vector[double], vector[double]] simple_adaptive[U](
         U * const,
@@ -41,9 +41,9 @@ cdef extern from "odeint_anyode.hpp" namespace "odeint_anyode":
         double,
         int,
         bool,
-    ) except +
+    ) except+
 
-    cdef StepType styp_from_name(string) except + nogil
+    cdef StepType styp_from_name(string) except+ nogil
     cdef bool requires_jacobian(StepType) nogil
 
 
