@@ -1,0 +1,12 @@
+when:
+  - event: [push]
+
+steps:
+  - name: build-and-test
+    image: cont-reg.bjodah.se:443/bjodah/triceratops-3:24
+    environment:
+      - PYTHONMALLOC=malloc
+    commands:
+      - ./scripts/ci.sh ${CI_REPO_NAME}
+      - ./scripts/prepare_deploy.sh
+      - if grep "DO-NOT-MERGE!" -R . --exclude ".woodpecker.yaml"; then exit 1; fi

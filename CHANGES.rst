@@ -1,3 +1,15 @@
+v0.10.7
+=======
+- setup.py: Explicitly set -std=c++17 (boost math 1.85 req. 14+)
+
+v0.10.6
+=======
+- Another update of AnyODE
+
+v0.10.5
+=======
+- update AnyODE (fix refcounting bug)
+
 v0.10.4
 =======
 - update AnyODE

@@ -11,7 +11,10 @@ MANIFEST
 __conda_version__.txt
 **/.ipynb_checkpoints/
 **.egg-info
-tests/catch.hpp
+tests/doctest.h
 tests/test_odeint_anyode
 tests/test_odeint_anyode_parallel
 tests/test_odeint_anyode_autorestart
+examples/thumbs/
+examples/index.html
+.coverage

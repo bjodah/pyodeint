@@ -1,7 +1,10 @@
+import os
+
 def make_ext(modname, pyxfilename):
     from distutils.extension import Extension
     return Extension(
         name=modname, sources=[pyxfilename], language='c++',
-        extra_compile_args=['-std=c++20'], include_dirs=['.', '../pyodeint/include', '../external/anyode/include'],
-        libraries=['m'],
+        extra_compile_args=['-std=c++20'],
+        include_dirs=['.', '../pyodeint/include', '../external/anyode/include'],
+        libraries=['m']+[l[2:] for l in os.environ.get("LDLIBS", "").split(' ') if l.startswith('-l')],
     )

@@ -1,10 +1,9 @@
-// C++11 source code.
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main()
-#include "catch.hpp"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "odeint_anyode_parallel.hpp"
 #include "testing_utils.hpp"
 
-TEST_CASE( "decay_adaptive", "[multi_adaptive]" ) {
+TEST_CASE( "decay_adaptive" ) {
     std::vector<double> k {{ 2.0, 3.0}};
     Decay odesys1(k[0]);
     Decay odesys2(k[1]);

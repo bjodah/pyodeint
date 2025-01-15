@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
+import gc
 import os
+import sys
 import numpy as np
 import pytest
 
 from pyodeint import integrate_adaptive, integrate_predefined
+
+def _get_refcount_None():
+    if hasattr(sys, 'getrefcount'):
+        gc.collect()
+        gc.collect()
+        return sys.getrefcount(None)
+    else:  # e.g. pypy
+        return 0
 
 
 decay_analytic = {
@@ -53,7 +63,7 @@ def _get_f_j(k):
 
 methods = [
     ('dopri5', False),
-    ('bs', False),
+    ('bulirsch_stoer', False),
     # rosenbrock4 suffered a massive performance regression:
     #   - https://github.com/headmyshoulder/odeint-v2/issues/189
     #   - https://github.com/bjodah/pyodeint/pull/16
@@ -70,9 +80,17 @@ def test_integrate_adaptive(method, use_jac):
     if not use_jac:
         j = None
     kwargs = dict(x0=0, xend=3, dx0=1e-10, atol=1e-8, rtol=1e-8, method=method)
-    # Run twice to catch possible side-effects:
-    xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
-    xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
+    # Run multiple times to catch possible side-effects:
+    nIter = 100
+    for ii in range(nIter):
+        if ii == 1:
+            nNone1 = _get_refcount_None()
+        xout, yout, info = integrate_adaptive(f, j, y0, **kwargs)
+    gc.collect()
+    nNone2 = _get_refcount_None()
+    delta = nNone2 - nNone1
+    assert -nIter//10 < delta < nIter//10
+
     assert info['success']
     assert info['atol'] == 1e-8 and info['rtol'] == 1e-8
     assert info['nfev'] > 0

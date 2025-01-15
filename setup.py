@@ -11,6 +11,7 @@ import subprocess
 import sys
 import warnings
 from setuptools import setup
+from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 try:
     import cython
@@ -21,8 +22,6 @@ else:
     assert cython  # silence pep8
 
 pkg_name = 'pyodeint'
-url = 'https://github.com/bjodah/' + pkg_name
-license = 'BSD'
 
 
 def _path_under_setup(*args):
@@ -86,6 +85,28 @@ else:
                 warnings.warn("Using git to derive version: dev-branches may compete.")
                 __version__ = re.sub(r'v([0-9.]+)-(\d+)-(\w+)', r'\1.post\2+\3', _git_version)  # .dev < '' < .post
 
+class BuildExt(build_ext):
+    """A custom build extension for adding compiler-specific options."""
+    c_opts = {
+        'msvc': ['/EHsc'],
+        'unix': [],
+    }
+
+    def build_extensions(self):
+        ct = self.compiler.compiler_type
+        opts = self.c_opts.get(ct, [])
+        if ct == 'unix':
+            opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
+            opts.append('-std=c++17')
+            if sys.platform == 'darwin' and re.search("clang", self.compiler.compiler[0]) is not None:
+                opts += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
+        elif ct == 'msvc':
+            opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
+        for ext in self.extensions:
+            ext.extra_compile_args = opts
+        build_ext.build_extensions(self)
+
+
 classifiers = [
     "Development Status :: 4 - Beta",
     'License :: OSI Approved :: BSD License',
@@ -113,14 +134,15 @@ setup_kwargs = dict(
     classifiers=classifiers,
     author='Björn Dahlgren',
     author_email='bjodah@DELETEMEgmail.com',
-    license=license,
-    url=url,
-    packages=[pkg_name] + tests,
+    license='BSD',
+    url='https://github.com/bjodah/' + pkg_name,
+    packages=[pkg_name, f'{pkg_name}.include'] + tests,
     include_package_data=True,
     install_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     setup_requires=['numpy'] + (['cython'] if USE_CYTHON else []),
     extras_require={'docs': ['Sphinx', 'sphinx_rtd_theme']},
     ext_modules=ext_modules,
+    cmdclass={'build_ext': BuildExt}
 )
 
 if __name__ == '__main__':
