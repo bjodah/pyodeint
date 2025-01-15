@@ -12,6 +12,7 @@ python3 -m pip install pytest-cov pytest-flakes matplotlib sphinx numpydoc sphin
 python3 setup.py sdist
 cd dist/
 CC=gcc CXX=g++ python3 -m pip install $(ls *.tar.gz | head -n 1)  # --ignore-installed
+cd -
 (cd /; python3 -m pytest --pyargs $PKG_NAME -v)
 CC=gcc CXX=g++ python3 -m pip install -e .[all]
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
