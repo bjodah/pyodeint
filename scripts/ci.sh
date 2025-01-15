@@ -10,7 +10,7 @@ source $(compgen -G "/opt-3/cpython-v3.*-apt-deb/bin/activate")
 #################### Install and test python package  ####################
 python3 -m pip install pytest-cov pytest-flakes matplotlib sphinx numpydoc sphinx_rtd_theme
 python3 setup.py sdist
-CC=gcc CXX=g++ python3 -m pip install --ignore-installed dist/*.tar.gz
+CC=gcc CXX=g++ python3 -m pip install dist/*.tar.gz  # --ignore-installed
 (cd /; python3 -m pytest --pyargs $PKG_NAME -v)
 CC=gcc CXX=g++ python3 -m pip install -e .[all]
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
