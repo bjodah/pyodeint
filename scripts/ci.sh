@@ -37,8 +37,11 @@ make CC=gcc CXX=g++ EXTRA_FLAGS=-DNDEBUG
 
 
 LLVM_ROOT=$(compgen -G "/opt-2/llvm-??")
+if [ ! -d $LLVM_ROOT ]; then >&2 echo "No LLVM_ROOT?"; exit 1; fi
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-asan")
+if [ ! -d $LIBCXX_ROOT ]; then >&2 echo "No LIBCXX_ROOT?"; exit 1; fi
+
 make clean
 make \
     CXX=clang++ \
@@ -57,5 +60,4 @@ make \
     LDLIBS="-lc++" \
     OPENMP_LIB="-Wl,-rpath,${LLVM_ROOT}/lib -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
-
 cd -
