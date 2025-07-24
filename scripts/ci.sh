@@ -1,12 +1,11 @@
 #!/bin/bash
 set -xeuo pipefail
 
-export PATH="$(compgen -G /opt-2/gcc-??/bin):$PATH"
 export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-3/boost-1.*/include")
 
 PKG_NAME=${1:-${CI_REPO_NAME##*/}}
 
-source /opt-3/cpython-v3.11-apt-deb/bin/activate
+source /opt-3/cpython-v3.*-apt-deb/bin/activate
 
 #################### Install and test python package  ####################
 
@@ -19,7 +18,6 @@ PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-re
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 ./scripts/render_notebooks.sh examples/
-(cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
 
 if [[ ! $(python3 setup.py --version) =~ ^[0-9]+.* ]]; then
@@ -39,6 +37,7 @@ make CC=gcc CXX=g++ EXTRA_FLAGS=-DNDEBUG
 
 
 LLVM_ROOT=$(compgen -G "/opt-2/llvm-??")
+LLVM_LIB_DIR=$(compgen -G "${LLVM_ROOT}/lib/$(uname -m)-*")
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-asan")
 make clean
@@ -47,7 +46,7 @@ make \
     EXTRA_FLAGS="-fsanitize=address -nostdinc++ -isystem ${LIBCXX_ROOT}/include/c++/v1" \
     LDFLAGS="-nostdlib++ -Wl,-rpath,${LIBCXX_ROOT}/lib -L${LIBCXX_ROOT}/lib" \
     LDLIBS="-lc++" \
-    OPENMP_LIB="-Wl,-rpath,${LLVM_ROOT}/lib -lomp" \
+    OPENMP_LIB="-Wl,-rpath,${LLVM_LIB_DIR} -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-debug")
@@ -57,7 +56,7 @@ make \
     EXTRA_FLAGS="-fsanitize=address -nostdinc++ -isystem ${LIBCXX_ROOT}/include/c++/v1" \
     LDFLAGS="-nostdlib++ -Wl,-rpath,${LIBCXX_ROOT}/lib -L${LIBCXX_ROOT}/lib" \
     LDLIBS="-lc++" \
-    OPENMP_LIB="-Wl,-rpath,${LLVM_ROOT}/lib -lomp" \
+    OPENMP_LIB="-Wl,-rpath,${LLVM_LIB_DIR} -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
 
 cd -
