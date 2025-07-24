@@ -18,7 +18,7 @@ PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-re
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 ./scripts/render_notebooks.sh examples/
-(cd examples/; ../scripts/render_index.sh *.html)
+#(cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
 
 if [[ ! $(python3 setup.py --version) =~ ^[0-9]+.* ]]; then
