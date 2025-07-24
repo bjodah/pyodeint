@@ -37,7 +37,7 @@ make CC=gcc CXX=g++ EXTRA_FLAGS=-DNDEBUG
 
 
 LLVM_ROOT=$(compgen -G "/opt-2/llvm-??")
-LLVM_LIB_DIR=$(compgen -G "{LLVM_ROOT}/lib/$(uname -m)-*")
+LLVM_LIB_DIR=$(compgen -G "${LLVM_ROOT}/lib/$(uname -m)-*")
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-asan")
 make clean
