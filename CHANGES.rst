@@ -1,3 +1,7 @@
+v0.10.10
+========
+- fix get_include() backcomp (must return str)
+
 v0.10.9
 =======
 - Drop use of pkg_resources

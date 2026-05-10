@@ -16,7 +16,7 @@ from ._release import __version__
 
 
 def get_include():
-    return Path(__file__).parent / 'include'
+    return str(Path(__file__).parent / 'include')
 
 
 def _bs(kwargs):
