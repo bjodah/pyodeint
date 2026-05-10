@@ -1,12 +1,12 @@
 #!/bin/bash
 set -xeuo pipefail
 
-export PATH="$(compgen -G /opt-2/gcc-??/bin):$PATH"
 export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-3/boost-1.*/include")
 
 PKG_NAME=${1:-${CI_REPO_NAME##*/}}
 
-source $(compgen -G "/opt-3/cpython-v3.*-apt-deb/bin/activate")
+source $(compgen -G "/opt-3/cpython-v3.*-apt-deb/bin/activate" | head -1)
+
 #################### Install and test python package  ####################
 python3 -m pip install pytest-cov pytest-flakes matplotlib sphinx numpydoc sphinx_rtd_theme
 python3 setup.py sdist
@@ -19,7 +19,6 @@ PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-re
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
 ./scripts/render_notebooks.sh examples/
-(cd examples/; ../scripts/render_index.sh *.html)
 ./scripts/generate_docs.sh
 
 if [[ ! $(python3 setup.py --version) =~ ^[0-9]+.* ]]; then
@@ -39,7 +38,8 @@ make CC=gcc CXX=g++ EXTRA_FLAGS=-DNDEBUG
 
 
 LLVM_ROOT=$(compgen -G "/opt-2/llvm-??")
-if [ ! -d $LLVM_ROOT ]; then >&2 echo "No LLVM_ROOT?"; exit 1; fi
+LLVM_LIB_DIR=$(compgen -G "${LLVM_ROOT}/lib/$(uname -m)-*")
+
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-asan")
 if [ ! -d $LIBCXX_ROOT ]; then >&2 echo "No LIBCXX_ROOT?"; exit 1; fi
@@ -50,7 +50,7 @@ make \
     EXTRA_FLAGS="-fsanitize=address -nostdinc++ -isystem ${LIBCXX_ROOT}/include/c++/v1" \
     LDFLAGS="-nostdlib++ -Wl,-rpath,${LIBCXX_ROOT}/lib -L${LIBCXX_ROOT}/lib" \
     LDLIBS="-lc++" \
-    OPENMP_LIB="-Wl,-rpath,$(dirname $(clang -print-file-name=libomp.so)) -lomp" \
+    OPENMP_LIB="-Wl,-rpath,${LLVM_LIB_DIR} -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
 
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-debug")
@@ -60,6 +60,6 @@ make \
     EXTRA_FLAGS="-fsanitize=address -nostdinc++ -isystem ${LIBCXX_ROOT}/include/c++/v1" \
     LDFLAGS="-nostdlib++ -Wl,-rpath,${LIBCXX_ROOT}/lib -L${LIBCXX_ROOT}/lib" \
     LDLIBS="-lc++" \
-    OPENMP_LIB="-Wl,-rpath,$(dirname $(clang -print-file-name=libomp.so)) -lomp" \
+    OPENMP_LIB="-Wl,-rpath,${LLVM_LIB_DIR} -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
 cd -

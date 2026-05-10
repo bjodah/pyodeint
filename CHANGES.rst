@@ -1,3 +1,7 @@
+v0.10.8
+=======
+- update AnyODE (drop deprecated Py2 C-API calls)
+
 v0.10.7
 =======
 - setup.py: Explicitly set -std=c++17 (boost math 1.85 req. 14+)
