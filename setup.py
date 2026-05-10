@@ -13,13 +13,6 @@ import warnings
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
-try:
-    import cython
-except ImportError:
-    _HAVE_CYTHON = False
-else:
-    _HAVE_CYTHON = True
-    assert cython  # silence pep8
 
 pkg_name = 'pyodeint'
 
@@ -28,7 +21,7 @@ def _path_under_setup(*args):
     return os.path.join(*args)
 
 _src = {ext: _path_under_setup(pkg_name, '_odeint.' + ext) for ext in "cpp pyx".split()}
-if _HAVE_CYTHON and os.path.exists(_src["pyx"]):
+if os.path.exists(_src["pyx"]):
     # Possible that a new release of Python needs a re-rendered Cython source,
     # or that we want to include possible bug-fix to Cython, disable by manually
     # deleting .pyx file from source distribution.
@@ -37,6 +30,9 @@ if _HAVE_CYTHON and os.path.exists(_src["pyx"]):
         os.unlink(_src['cpp'])  # ensure c++ source is re-generated.
 else:
     USE_CYTHON = False
+    if not os.path.exists(_src['cpp']):
+        raise ValueError("Neither .cpp nor .pyx file available")
+
 
 package_include = os.path.join(pkg_name, 'include')
 
