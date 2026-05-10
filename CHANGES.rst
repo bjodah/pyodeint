@@ -1,3 +1,8 @@
+v0.10.9
+=======
+- Drop use of pkg_resources
+- Always build using cython when .pyx available
+
 v0.10.8
 =======
 - update AnyODE (drop deprecated Py2 C-API calls)
