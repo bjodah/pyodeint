@@ -3,8 +3,8 @@
 Python binding for odeint from boost.
 """
 
-from __future__ import absolute_import
 
+from pathlib import Path
 import warnings
 
 import numpy as np
@@ -16,9 +16,7 @@ from ._release import __version__
 
 
 def get_include():
-    from pkg_resources import resource_filename, Requirement
-    return resource_filename(Requirement.parse(__name__),
-                             '%s/include' % __name__)
+    return Path(__file__).parent / 'include'
 
 
 def _bs(kwargs):

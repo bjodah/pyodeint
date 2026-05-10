@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xeuo pipefail
 
-export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-3/boost-1.*/include")
+export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-4/boost-1.*-release/include")
 
 PKG_NAME=${1:-${CI_REPO_NAME##*/}}
 
