@@ -1,19 +1,20 @@
 #!/bin/bash
 set -xeuo pipefail
 
-export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-3/boost-1.*/include")
+export CPLUS_INCLUDE_PATH=$(compgen -G "/opt-4/boost-1.*-release/include")
 
 PKG_NAME=${1:-${CI_REPO_NAME##*/}}
 
-source /opt-3/cpython-v3.*-apt-deb/bin/activate
+source $(compgen -G "/opt-3/cpython-v3.*-apt-deb/bin/activate" | head -1)
 
 #################### Install and test python package  ####################
-
+python3 -m pip install pytest-cov pytest-flakes matplotlib sphinx numpydoc sphinx_rtd_theme
 python3 setup.py sdist
-CC=gcc CXX=g++ python3 -m pip install --ignore-installed dist/*.tar.gz
+cd dist/
+CC=gcc CXX=g++ python3 -m pip install $(ls *.tar.gz | head -n 1)  # --ignore-installed
+cd -
 (cd /; python3 -m pytest --pyargs $PKG_NAME -v)
 CC=gcc CXX=g++ python3 -m pip install -e .[all]
-python3 -m pip install pytest-cov pytest-flakes matplotlib sphinx numpydoc sphinx_rtd_theme
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 
@@ -39,7 +40,10 @@ make CC=gcc CXX=g++ EXTRA_FLAGS=-DNDEBUG
 LLVM_ROOT=$(compgen -G "/opt-2/llvm-??")
 LLVM_LIB_DIR=$(compgen -G "${LLVM_ROOT}/lib/$(uname -m)-*")
 
+
 LIBCXX_ROOT=$(compgen -G "/opt-2/libcxx??-asan")
+if [ ! -d $LIBCXX_ROOT ]; then >&2 echo "No LIBCXX_ROOT?"; exit 1; fi
+
 make clean
 make \
     CXX=clang++ \
@@ -58,5 +62,4 @@ make \
     LDLIBS="-lc++" \
     OPENMP_LIB="-Wl,-rpath,${LLVM_LIB_DIR} -lomp" \
     PY_LD_PRELOAD=$(clang++ --print-file-name=libclang_rt.asan.so)
-
 cd -

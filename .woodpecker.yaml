@@ -3,9 +3,9 @@ when:
 
 steps:
   - name: build-and-test
-    image: cont-reg.bjodah.se:443/bjodah/triceratops-3:34
+    image: cont-reg.bjodah.se:443/bjodah/triceratops-4:33
     environment:
-      - PYTHONMALLOC=malloc
+      PYTHONMALLOC: malloc
     commands:
       - bash -l ./scripts/ci.sh ${CI_REPO_NAME}
       - ./scripts/prepare_deploy.sh

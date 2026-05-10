@@ -35,3 +35,4 @@ done
 set -e
 cd examples/
 #../scripts/render_index.sh *.html
+
